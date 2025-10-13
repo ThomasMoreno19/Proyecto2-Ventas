@@ -1,4 +1,4 @@
 export class CreateLineaDto {
-    nombre: string;
-    descripcion?: string
+  nombre: string;
+  descripcion?: string;
 }

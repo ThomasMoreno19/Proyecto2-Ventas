@@ -33,3 +33,11 @@ model Linea {
   deletedAt   DateTime?
   marcas Marca[]
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nombre      String
+  mail     String   @unique
+  contrasena  String
+  createdAt DateTime @default(now())
+}

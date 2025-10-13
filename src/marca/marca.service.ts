@@ -4,7 +4,11 @@ import { MarcaRepository } from './repositories/marca.repository';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { MarcaDto } from './dto/marca.dto';
-import { toMarcaDto, toCreateEntity, toUpdateEntity } from './mappers/marca.mapper';
+import {
+  toMarcaDto,
+  toCreateEntity,
+  toUpdateEntity,
+} from './mappers/marca.mapper';
 
 @Injectable()
 export class MarcaService {

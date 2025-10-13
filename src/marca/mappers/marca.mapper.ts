@@ -26,4 +26,3 @@ export function toUpdateEntity(dto: UpdateMarcaDto) {
     ...dto,
   };
 }
-

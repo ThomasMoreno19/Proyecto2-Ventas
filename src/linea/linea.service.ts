@@ -3,7 +3,11 @@ import { LineaRepository } from './repositories/linea.repository';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
 import { LineaDto } from './dto/linea.dto';
-import { toLineaDto, toCreateEntity, toUpdateEntity } from './mappers/linea.mapper';
+import {
+  toLineaDto,
+  toCreateEntity,
+  toUpdateEntity,
+} from './mappers/linea.mapper';
 
 @Injectable()
 export class LineaService {
