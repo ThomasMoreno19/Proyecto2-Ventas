@@ -1,7 +1,5 @@
 export class LineaDto {
-  id: number;
+  id: string;
   nombre: string;
   descripcion?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

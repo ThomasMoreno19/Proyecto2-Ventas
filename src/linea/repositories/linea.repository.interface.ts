@@ -4,8 +4,8 @@ import { Linea } from '@prisma/client';
 
 export interface ILineaRepository {
   findAll(): Promise<Linea[]>;
-  findById(id: number): Promise<Linea | null>;
+  findById(nombre: string): Promise<Linea | null>;
   create(data: CreateLineaDto): Promise<Linea>;
-  update(id: number, data: UpdateLineaDto): Promise<Linea>;
-  softDelete(id: number): Promise<void>;
+  update(nombre: string, data: UpdateLineaDto): Promise<Linea>;
+  softDelete(nombre: string): Promise<void>;
 }

@@ -1,37 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
 import { ILineaRepository } from './linea.repository.interface';
+import { Linea } from '@prisma/client';
 
 @Injectable()
 export class LineaRepository implements ILineaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.linea.findMany({
-      where: { deletedAt: null },
+  // Trae todas las líneas activas (deletedAt no existe o es null)
+  async findAll(): Promise<Linea[]> {
+    const lineas = await this.prisma.linea.findMany();
+    return lineas.filter((linea) => !linea.deletedAt);
+  }
+
+  // Busca una línea por nombre, solo si está activa
+  async findById(nombre: string): Promise<Linea | null> {
+    const linea = await this.prisma.linea.findFirst({
+      where: { nombre },
+    });
+
+    if (!linea || linea.deletedAt) {
+      return null;
+    }
+    return linea;
+  }
+
+  // Crea una nueva línea
+  async create(data: CreateLineaDto): Promise<Linea> {
+    return this.prisma.linea.create({
+      data: {
+        nombre: data.nombre,
+        descripcion: data.descripcion ?? null,
+        deletedAt: null, // opcional, pero explícito
+      },
     });
   }
 
-  async findById(id: number) {
-    return this.prisma.linea.findUnique({
-      where: { id },
+  // Actualiza una línea existente por nombre, solo si está activa
+  async update(nombre: string, data: UpdateLineaDto): Promise<Linea> {
+    const linea = await this.prisma.linea.findFirst({
+      where: { nombre },
     });
-  }
 
-  async create(data: CreateLineaDto) {
-    return this.prisma.linea.create({ data });
-  }
+    if (!linea || linea.deletedAt) {
+      throw new NotFoundException(`La línea con nombre "${nombre}" no existe`);
+    }
 
-  async update(id: number, data: UpdateLineaDto) {
     return this.prisma.linea.update({
-      where: { id },
-      data,
+      where: { id: linea.id },
+      data: {
+        ...data,
+      },
     });
   }
 
-  async softDelete(id: number): Promise<void> {
+  // Soft-delete: marca deletedAt con la fecha actual
+  async softDelete(id: string): Promise<void> {
+    const linea = await this.prisma.linea.findUnique({ where: { id } });
+
+    if (!linea || linea.deletedAt) {
+      throw new NotFoundException(`La línea con id "${id}" no existe`);
+    }
+
     await this.prisma.linea.update({
       where: { id },
       data: { deletedAt: new Date() },
