@@ -1,8 +1,6 @@
 export class MarcaDto {
-  id: number;
+  id: string;
   nombre: string;
   descripcion?: string;
   logo?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
