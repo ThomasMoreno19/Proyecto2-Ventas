@@ -4,38 +4,43 @@ import { MarcaRepository } from './repositories/marca.repository';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { MarcaDto } from './dto/marca.dto';
-import { toMarcaDto, toCreateEntity, toUpdateEntity } from './mappers/marca.mapper';
+import { toMarcaDto } from './mappers/marca.mapper';
+import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MarcaService {
-  constructor(private readonly marcaRepository: MarcaRepository) {}
+  constructor(
+    private readonly marcaRepository: MarcaRepository,
+    private readonly prisma: PrismaService
+  ) {}
 
   async findAll(): Promise<MarcaDto[]> {
     const marcas = await this.marcaRepository.findAll();
     return marcas.map(toMarcaDto);
   }
 
-  async findById(id: number): Promise<MarcaDto> {
-    const marca = await this.marcaRepository.findById(id);
+  async findById(nombre: string): Promise<MarcaDto> {
+    const marca = await this.marcaRepository.findById(nombre);
     if (!marca) {
-      throw new NotFoundException(`Marca con id ${id} no encontrada`);
+      throw new NotFoundException(`Marca con nombre ${nombre} no encontrada`);
     }
     return toMarcaDto(marca);
   }
 
   async create(dto: CreateMarcaDto): Promise<MarcaDto> {
-    const entity = toCreateEntity(dto);
-    const marca = await this.marcaRepository.create(entity);
+    await checkUniqueName(this.prisma, 'marca', dto.nombre);
+
+    const marca = await this.marcaRepository.create(dto);
     return toMarcaDto(marca);
   }
 
-  async update(id: number, dto: UpdateMarcaDto): Promise<MarcaDto> {
-    const entity = toUpdateEntity(dto);
-    const marca = await this.marcaRepository.update(id, entity);
+  async update(nombre: string, dto: UpdateMarcaDto): Promise<MarcaDto> {
+    const marca = await this.marcaRepository.update(nombre, dto);
     return toMarcaDto(marca);
   }
 
-  async softDelete(id: number): Promise<void> {
-    await this.marcaRepository.softDelete(id);
+  async softDelete(nombre: string): Promise<void> {
+    await this.marcaRepository.softDelete(nombre);
   }
 }

@@ -1,9 +1,10 @@
 import { Marca, Prisma } from '@prisma/client';
+import { CreateMarcaDto } from '../dto/create-marca.dto';
 
 export interface IMarcaRepository {
-  create(data: Prisma.MarcaCreateInput): Promise<Marca>;
+  create(data: CreateMarcaDto): Promise<Marca>;
   findAll(): Promise<Marca[]>;
-  findById(id: number): Promise<Marca | null>;
-  update(id: number, data: Prisma.MarcaUpdateInput): Promise<Marca>;
-  softDelete(id: number): Promise<Marca>;
+  findById(nombre: string): Promise<Marca | null>;
+  update(nombre: string, data: Prisma.MarcaUpdateInput): Promise<Marca>;
+  softDelete(nombre: string): Promise<void>;
 }
