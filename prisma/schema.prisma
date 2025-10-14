@@ -81,28 +81,28 @@ model Verification {
 }
 
 model Marca {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
   descripcion String?
   logo        String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
   deletedAt   DateTime?
   marcaXLineas MarcaXLinea[]
 }
 
 model Linea {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
   descripcion String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
   deletedAt   DateTime?
   marcaXLineas MarcaXLinea[]
 }
 
 model MarcaXLinea {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @map("_id")
   marcaId   String     @db.ObjectId
   lineaId   String     @db.ObjectId
 
@@ -112,17 +112,18 @@ model MarcaXLinea {
   productos Product[]  
 
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  updatedAt DateTime   @default(now()) @updatedAt
+  deletedAt DateTime?
 }
 
 model Product {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @map("_id")
   name          String
   description   String?
   price         Float
   stock         Int
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  updatedAt     DateTime      @default(now()) @updatedAt
   deletedAt     DateTime?
 
   marcaXLineaId String?       @db.ObjectId

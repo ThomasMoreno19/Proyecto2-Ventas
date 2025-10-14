@@ -1,21 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, Put } from '@nestjs/common';
 import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
+import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
 
 @Controller('marca')
 export class MarcaController {
   constructor(private readonly marcaService: MarcaService) {}
 
   @Post()
+  @UsePipes(NormalizePipe)
   create(@Body() createMarcaDto: CreateMarcaDto) {
     return this.marcaService.create(createMarcaDto);
   }
@@ -25,18 +19,19 @@ export class MarcaController {
     return this.marcaService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.marcaService.findById(+id);
+  @Get(':nombre')
+  findOne(@Param('nombre') nombre: string) {
+    return this.marcaService.findById(nombre);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMarcaDto: UpdateMarcaDto) {
-    return this.marcaService.update(+id, updateMarcaDto);
+  @Put(':nombre')
+  @UsePipes(NormalizePipe)
+  update(@Param('nombre') nombre: string, @Body() updateMarcaDto: UpdateMarcaDto) {
+    return this.marcaService.update(nombre, updateMarcaDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.marcaService.softDelete(+id);
+  @Delete(':nombre')
+  remove(@Param('nombre') nombre: string) {
+    return this.marcaService.softDelete(nombre);
   }
 }
