@@ -79,3 +79,52 @@ model Verification {
 
   @@map("verification")
 }
+
+model Marca {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcaXLineas MarcaXLinea[]
+}
+
+model Linea {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcaXLineas MarcaXLinea[]
+}
+
+model MarcaXLinea {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId   String     @db.ObjectId
+  lineaId   String     @db.ObjectId
+
+  marca     Marca      @relation(fields: [marcaId], references: [id])
+  linea     Linea      @relation(fields: [lineaId], references: [id])
+
+  productos Product[]  
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Product {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  price         Float
+  stock         Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  marcaXLineaId String?       @db.ObjectId
+  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+}
