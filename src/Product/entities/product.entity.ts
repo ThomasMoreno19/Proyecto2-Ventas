@@ -1,45 +1,17 @@
-import {
-Entity,
-PrimaryGeneratedColumn,
-Column,
-ManyToOne,
-JoinColumn,
-CreateDateColumn,
-UpdateDateColumn,
-} from 'typeorm';
+import { Product } from '@prisma/client';
 
+export class ProductEntity implements Product {
+  id!: string;
+  name!: string;
+  description!: string | null;
+  price!: number;
+  stock!: number;
+  createdAt!: Date;
+  updatedAt!: Date;
+  deletedAt!: Date | null;
+  marcaXLineaId: string | null;
 
-@Entity({ name: 'products' })
-export class ProductEntity {
-@PrimaryGeneratedColumn('increment')
-id: number;
-
-
-@Column({ type: 'varchar', length: 255 })
-name: string;
-
-
-@Column({ type: 'text', nullable: true })
-description?: string;
-
-
-@Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
-price: number;
-
-
-@Column({ type: 'int', default: 0 })
-stock: number;
-    
-
-// relación con Line
-@ManyToOne(() => Line, (line) => line.products, { eager: false, onDelete: 'SET NULL' })
-@JoinColumn({ name: 'line_id' })
-line: Line;
-
-@CreateDateColumn({ type: 'timestamptz' })
-createdAt: Date;
-
-
-@UpdateDateColumn({ type: 'timestamptz' })
-updatedAt: Date;
+  constructor(partial: Partial<ProductEntity>) {
+    Object.assign(this, partial);
+  }
 }

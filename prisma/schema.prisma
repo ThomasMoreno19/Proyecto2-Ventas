@@ -9,27 +9,63 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Marca {
-  id          Int      @id @default(autoincrement())
-  nombre      String
+  id          String        @id @map("_id")
+  nombre      String       
   descripcion String?
   logo        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
   deletedAt   DateTime?
-  lineas Linea[]
+  marcaXLineas MarcaXLinea[]
+
+  @@unique([name])
 }
 
 model Linea {
-  id          Int      @id @default(autoincrement())
-  nombre      String
+  id          String        @id @map("_id")
+  nombre      String        
   descripcion String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
   deletedAt   DateTime?
-  marcas Marca[]
+  marcaXLineas MarcaXLinea[]
+
+  @@unique([name])
+}
+
+model MarcaXLinea {
+  id        String          @id @map("_id")
+  marcaId   String          @db.ObjectId
+  lineaId   String          @db.ObjectId
+
+  marca     Marca           @relation(fields: [marcaId], references: [id])
+  linea     Linea           @relation(fields: [lineaId], references: [id])
+
+  productos Product[]  
+
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now()) @updatedAt
+
+  @@unique([marcaId, lineaId])
+}
+
+model Product {
+  id            String        @id @map("_id")
+  name          String        
+  description   String?
+  price         Float
+  stock         Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  deletedAt     DateTime?
+
+  marcaXLineaId String?       @db.ObjectId
+  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+
+    @@unique([name])
 }

@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsInt, Min, IsArray, IsNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsInt, Min, IsNotEmpty } from 'class-validator';
 
 export class CreateProductDto {
     @IsString()
@@ -18,17 +18,7 @@ export class CreateProductDto {
     stock: number;
 
     @IsOptional()
-    @IsInt()
-    lineId?: number;
+    @IsString()
+    marcaXLineaId?: string;
 
-    @IsOptional()
-    @IsInt()
-    brandId?: number;
-
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    images?: string[]; // URLs o paths de las imágenes
-
-    createdAt?: Date;
 }

@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import type { IProductRepository } from './repository/product.repository.interface';
+import type { IProductRepository } from './repositories/product.repository.interface';
+import { Product } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -9,23 +10,24 @@ export class ProductService {
     @Inject('IProductRepository')
     private readonly repository: IProductRepository,
   ) {}
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new producto';
+
+  create(createProductDto: CreateProductDto): Promise<Product> {
+    return this.repository.create(createProductDto);
   }
 
-  findAll() {
-    return `This action returns all producto`;
+  findAll(): Promise<Product[]> {
+    return this.repository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} producto`;
+  findOne(id: string): Promise<Product | null> {
+    return this.repository.findOne(id);
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} producto`;
+  update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+    return this.repository.update(id, updateProductDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} producto`;
+  softDelete(id: string): Promise<Product> {
+    return this.repository.softDelete(id);
   }
 }
