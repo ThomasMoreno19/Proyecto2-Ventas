@@ -32,18 +32,12 @@ export class UsersController {
   }
 
   @Post('password/reset/request')
-  requestPasswordReset(
-    @Request() req: ExpressRequest,
-    @Body() dto: CheckEmailDto,
-  ) {
+  requestPasswordReset(@Request() req: ExpressRequest, @Body() dto: CheckEmailDto) {
     return this.usersService.requestPasswordReset(req, dto);
   }
 
   @Post('password/reset/confirm')
-  confirmPasswordReset(
-    @Request() req: ExpressRequest,
-    @Body() dto: ResetPasswordDto,
-  ) {
+  confirmPasswordReset(@Request() req: ExpressRequest, @Body() dto: ResetPasswordDto) {
     return this.usersService.confirmPasswordReset(req, dto);
   }
 }

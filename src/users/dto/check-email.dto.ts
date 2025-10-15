@@ -6,5 +6,3 @@ export class CheckEmailDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   email!: string;
 }
-
-

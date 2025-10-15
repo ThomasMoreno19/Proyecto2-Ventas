@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './lib/auth';
 import { UsersModule } from './users/users.module';
+import { VentasModule } from './ventas/ventas.module'; // ← Agrega este import
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UsersModule } from './users/users.module';
       disableGlobalAuthGuard: true,
     }),
     UsersModule,
+    VentasModule, // ← Agrega esto
   ],
   controllers: [AppController],
   providers: [AppService],

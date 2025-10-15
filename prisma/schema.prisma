@@ -8,53 +8,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model proyecto_2 {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  @@map("proyecto-2")
-}
-
 enum Role {
   USER
   ADMIN
 }
 
 model User {
-  id            String    @id @map("_id")
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   role          Role      @default(USER)
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  ventas        Venta[]   // relación 1:N
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String
+  userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @map("_id")
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
   accountId             String
   providerId            String
-  userId                String
+  userId                String    @db.ObjectId
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
@@ -70,12 +63,39 @@ model Account {
 }
 
 model Verification {
-  id         String   @id @map("_id")
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
   @@map("verification")
+}
+
+model Venta {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  fecha        DateTime       @default(now())        // <- renombrado desde 'date'
+  usuarioId    String         @db.ObjectId
+  usuario      User           @relation(fields: [usuarioId], references: [id])
+  detalleVenta DetalleVenta[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("venta")
+}
+
+model DetalleVenta {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  ventaId        String   @db.ObjectId
+  venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  producto       String                         // <- agregado
+  cantidad       Int
+  precioUnitario Float                          // <- agregado (en Mongo no hay Decimal nativo en Prisma; si querés Decimal128, ver nota)
+  subtotal       Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([ventaId])
+  @@map("detalle_venta")
 }

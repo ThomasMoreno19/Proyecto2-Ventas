@@ -10,5 +10,3 @@ export class VerifyEmailOtpDto {
   @Length(4, 8)
   otp!: string;
 }
-
-
