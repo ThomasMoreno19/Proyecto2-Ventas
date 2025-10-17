@@ -1,14 +1,26 @@
 import { BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
-// Verifica que el nombre sea único en la tabla especificada (marca o linea)
+// Verifica que el nombre sea único en la tabla especificada
 export async function checkUniqueName(
   prisma: PrismaService,
-  model: 'marca' | 'linea',
+  model: 'marca' | 'linea' | 'cliente',
   nombre: string,
 ) {
-  const exists = await (prisma as any)[model].findFirst({
-    where: { nombre: nombre.trim().toLowerCase() },
+  const exists = await prisma.$transaction(async (tx) => {
+    if (model === 'marca') {
+      return tx.marca.findFirst({
+        where: { nombre: nombre.trim().toLowerCase() },
+      });
+    }
+    if (model === 'cliente') {
+      return tx.cliente.findFirst({
+        where: { nombre: nombre.trim().toLowerCase() },
+      });
+    }
+    return tx.linea.findFirst({
+      where: { nombre: nombre.trim().toLowerCase() },
+    });
   });
 
   if (exists) {
