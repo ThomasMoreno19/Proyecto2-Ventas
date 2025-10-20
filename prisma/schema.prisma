@@ -21,7 +21,7 @@ model Marca {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   deletedAt   DateTime?
-  marcaXLineas MarcaXLinea[]
+  productos Product[]
 }
 
 model Linea {
@@ -31,22 +31,7 @@ model Linea {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   deletedAt   DateTime?
-  marcaXLineas MarcaXLinea[]
-}
-
-model MarcaXLinea {
-  id        String     @id @map("_id")
-  marcaId   String     @db.ObjectId
-  lineaId   String     @db.ObjectId
-
-  marca     Marca      @relation(fields: [marcaId], references: [id])
-  linea     Linea      @relation(fields: [lineaId], references: [id])
-
-  productos Product[]  
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now()) @updatedAt
-  deletedAt DateTime?
+  productos Product[]
 }
 
 model Product {
@@ -59,6 +44,8 @@ model Product {
   updatedAt     DateTime      @default(now()) @updatedAt
   deletedAt     DateTime?
 
-  marcaXLineaId String?       @db.ObjectId
-  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+  marcaId       String
+  marca Marca   @relation(fields: [marcaId], references: [id])
+  lineaId       String
+  linea Linea   @relation(fields: [marcaId], references: [id])
 }
