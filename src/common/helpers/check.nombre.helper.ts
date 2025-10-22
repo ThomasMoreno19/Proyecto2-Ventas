@@ -13,11 +13,14 @@ export async function checkUniqueName(
         where: { nombre: nombre.trim().toLowerCase() },
       });
     }
+<<<<<<< HEAD
     if (model === 'cliente') {
       return tx.cliente.findFirst({
         where: { nombre: nombre.trim().toLowerCase() },
       });
     }
+=======
+>>>>>>> 0ef94826c494c445fdbbee0e15304ee07878d50f
     return tx.linea.findFirst({
       where: { nombre: nombre.trim().toLowerCase() },
     });

@@ -1,5 +1,8 @@
-// src/marca/marca.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MarcaRepository } from './repositories/marca.repository';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
@@ -7,12 +10,13 @@ import { MarcaDto } from './dto/marca.dto';
 import { toMarcaDto } from './mappers/marca.mapper';
 import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { canDelete } from './helpers/check.producto';
 
 @Injectable()
 export class MarcaService {
   constructor(
     private readonly marcaRepository: MarcaRepository,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   async findAll(): Promise<MarcaDto[]> {
@@ -41,6 +45,19 @@ export class MarcaService {
   }
 
   async softDelete(nombre: string): Promise<void> {
+    const marca = await this.marcaRepository.findById(nombre);
+    if (!marca) {
+      throw new NotFoundException(`La marca "${nombre}" no existe.`);
+    }
+
+    const canDeleteMarca = await canDelete(this.prisma, marca.id);
+
+    if (!canDeleteMarca) {
+      throw new BadRequestException(
+        'No se puede eliminar la marca porque tiene productos asociados.',
+      );
+    }
+
     await this.marcaRepository.softDelete(nombre);
   }
 }

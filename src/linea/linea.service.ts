@@ -1,18 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { LineaRepository } from './repositories/linea.repository';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
 import { LineaDto } from './dto/linea.dto';
-import { toLineaDto} from './mappers/linea.mapper';
+import { toLineaDto } from './mappers/linea.mapper';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
+import { canDelete } from './helpers/check.producto';
 
 @Injectable()
 export class LineaService {
   constructor(
-      private readonly lineaRepository: LineaRepository,
-      private readonly prisma: PrismaService
-    ) {}
+    private readonly lineaRepository: LineaRepository,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async findAll(): Promise<LineaDto[]> {
     const lineas = await this.lineaRepository.findAll();
@@ -40,6 +45,19 @@ export class LineaService {
   }
 
   async softDelete(nombre: string): Promise<void> {
+    const linea = await this.lineaRepository.findById(nombre);
+    if (!linea) {
+      throw new NotFoundException(`La línea "${nombre}" no existe.`);
+    }
+
+    const canDeleteLinea = await canDelete(this.prisma, linea.id);
+
+    if (!canDeleteLinea) {
+      throw new BadRequestException(
+        'No se puede eliminar la línea porque tiene productos asociados.',
+      );
+    }
+
     await this.lineaRepository.softDelete(nombre);
   }
 }
