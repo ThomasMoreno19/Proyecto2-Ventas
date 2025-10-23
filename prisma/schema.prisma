@@ -14,29 +14,49 @@ datasource db {
 }
 
 model Marca {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
+  id          String        @id @map("_id")
+  nombre      String       
   descripcion String?
   logo        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
   deletedAt   DateTime?
+  marcaXLineas MarcaXLinea[]
+
+  @@unique([name])
   productos Product[]
 }
 
 model Linea {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
+  id          String        @id @map("_id")
+  nombre      String        
   descripcion String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
   deletedAt   DateTime?
+  marcaXLineas MarcaXLinea[]
+}
+
+model MarcaXLinea {
+  id        String          @id @map("_id")
+  marcaId   String          @db.ObjectId
+  lineaId   String          @db.ObjectId
+
+  marca     Marca           @relation(fields: [marcaId], references: [id])
+  linea     Linea           @relation(fields: [lineaId], references: [id])
+
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now()) @updatedAt
+  deletedAt DateTime?
+
+
+  @@unique([marcaId, lineaId])
   productos Product[]
 }
 
 model Product {
   id            String        @id @map("_id")
-  name          String
+  name          String        
   description   String?
   price         Float
   stock         Int
@@ -44,8 +64,13 @@ model Product {
   updatedAt     DateTime      @default(now()) @updatedAt
   deletedAt     DateTime?
 
+  marcaXLineaId String?       @db.ObjectId
+  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+  marcaXLineas  MarcaXLinea[]
+
+    @@unique([name])
   marcaId       String
   marca Marca   @relation(fields: [marcaId], references: [id])
   lineaId       String
-  linea Linea   @relation(fields: [marcaId], references: [id])
+  linea Linea   @relation(fields: [lineaId], references: [id])
 }
