@@ -12,7 +12,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
       provide: 'IProductRepository',
       useValue: ProductRepository,
     },
-    PrismaService
+    PrismaService,
   ],
 })
 export class ProductModule {}
