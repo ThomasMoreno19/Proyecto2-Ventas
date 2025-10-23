@@ -15,7 +15,6 @@ export class MarcaRepository implements IMarcaRepository {
       data: {
         nombre: data.nombre,
         descripcion: data.descripcion ?? null,
-        logo: data.logo ?? null,
         deletedAt: null, // explícito
       },
     });

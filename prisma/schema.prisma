@@ -22,9 +22,9 @@ model Marca {
   updatedAt   DateTime      @default(now()) @updatedAt
   deletedAt   DateTime?
   marcaXLineas MarcaXLinea[]
-  marcaXLineas MarcaXLinea[]
 
   @@unique([name])
+  productos Product[]
 }
 
 model Linea {
@@ -45,14 +45,13 @@ model MarcaXLinea {
   marca     Marca           @relation(fields: [marcaId], references: [id])
   linea     Linea           @relation(fields: [lineaId], references: [id])
 
-  productos Product[]  
-
   createdAt DateTime        @default(now())
   updatedAt DateTime        @default(now()) @updatedAt
   deletedAt DateTime?
 
 
   @@unique([marcaId, lineaId])
+  productos Product[]
 }
 
 model Product {
@@ -70,4 +69,8 @@ model Product {
   marcaXLineas  MarcaXLinea[]
 
     @@unique([name])
+  marcaId       String
+  marca Marca   @relation(fields: [marcaId], references: [id])
+  lineaId       String
+  linea Linea   @relation(fields: [lineaId], references: [id])
 }
