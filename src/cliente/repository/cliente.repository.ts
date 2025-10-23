@@ -4,6 +4,7 @@ import { Cliente } from '@prisma/client';
 import { IClienteRepository } from './cliente.repository.interface';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import { UpdateClienteDto } from '../dto/update-cliente.dto';
+import { DeleteClienteDto } from '../dto/delete-cliente.dto';
 
 @Injectable()
 export class ClienteRepository implements IClienteRepository {
@@ -43,25 +44,32 @@ export class ClienteRepository implements IClienteRepository {
   }
 
   // Actualizar una cliente por nombre
-  async update(cuil: string, data: UpdateClienteDto): Promise<Cliente> {
+  async update(data: UpdateClienteDto): Promise<Cliente> {
     const cliente = await this.prisma.cliente.findFirst({
-      where: { cuil },
+      where: { cuil: data.cuil },
     });
 
     if (!cliente || cliente.deletedAt) {
-      throw new NotFoundException(`El cliente con cuil "${cuil}" no existe`);
+      throw new NotFoundException(`El cliente con cuil "${data.cuil}" no existe`);
     }
 
+    // Desestructuramos y omitimos cuil de forma tipada (no as any)
+    const { cuil, ...updateData } = data;
+
+    // Opcional: normalizar/validar campos antes de persistir
+    const payload = {
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
     return this.prisma.cliente.update({
-      where: { cuil: cliente.cuil },
-      data: {
-        ...data,
-      },
+      where: { cuil },
+      data: payload,
     });
   }
 
-  // Soft-delete por nombre
-  async softDelete(cuil: string): Promise<void> {
+  // Soft-delete por cuil
+  async softDelete(cuil: string): Promise<DeleteClienteDto> {
     const cliente = await this.prisma.cliente.findFirst({
       where: { cuil },
     });
@@ -74,5 +82,6 @@ export class ClienteRepository implements IClienteRepository {
       where: { cuil: cliente.cuil },
       data: { deletedAt: new Date() },
     });
+    return { cuil, deleteAt: new Date() };
   }
 }

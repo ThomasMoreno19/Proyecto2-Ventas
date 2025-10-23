@@ -4,8 +4,13 @@ import { ClienteRepository } from './repository/cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { toClienteDto } from './mapper/cliente.mapper';
-import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
 import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  ensureUniqueForCreate,
+  ensureUniqueForUpdate,
+  ensureExistsAndActive,
+} from './helper/cliente.helper';
+import { DeleteClienteDto } from './dto/delete-cliente.dto';
 
 @Injectable()
 export class ClienteService {
@@ -22,24 +27,27 @@ export class ClienteService {
   async findById(nombre: string): Promise<CreateClienteDto> {
     const cliente = await this.clienteRepository.findById(nombre);
     if (!cliente) {
-      throw new NotFoundException(`cliente con nombre ${nombre} no encontrado`);
+      throw new NotFoundException(`cliente con cuil ${nombre} no encontrado`);
     }
     return toClienteDto(cliente);
   }
 
   async create(dto: CreateClienteDto): Promise<CreateClienteDto> {
-    await checkUniqueName(this.prisma, 'cliente', dto.nombre);
+    await ensureUniqueForCreate(this.prisma, dto);
 
     const cliente = await this.clienteRepository.create(dto);
     return toClienteDto(cliente);
   }
 
-  async update(cuil: string, dto: UpdateClienteDto): Promise<CreateClienteDto> {
-    const cliente = await this.clienteRepository.update(cuil, dto);
+  async update(dto: UpdateClienteDto): Promise<CreateClienteDto> {
+    await ensureUniqueForUpdate(this.prisma, dto);
+
+    const cliente = await this.clienteRepository.update(dto);
     return toClienteDto(cliente);
   }
 
-  async softDelete(nombre: string): Promise<void> {
-    await this.clienteRepository.softDelete(nombre);
+  async softDelete(cuil: string): Promise<DeleteClienteDto> {
+    await ensureExistsAndActive(this.prisma, cuil);
+    return await this.clienteRepository.softDelete(cuil);
   }
 }

@@ -1,33 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UsePipes,
-  Put,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Delete, UsePipes, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
 import { ValidateCuilPipe } from './pipe/normalize-cuil.pipe';
 import { ValidateTelefonoPipe } from './pipe/normalize-telefono.pipe';
+import { ValidateEmailPipe } from './pipe/normalize-email.pipe';
 
 @ApiTags('Cliente')
 @Controller('cliente')
 export class ClienteController {
   constructor(private readonly clienteService: ClienteService) {}
 
-  // ────────────────────────────────────────────────
   @Post()
   @UsePipes(NormalizePipe)
   @ApiOperation({ summary: 'Crea un nuevo cliente' })
@@ -38,16 +23,17 @@ export class ClienteController {
     description: 'Datos inválidos o nombre duplicado.',
   })
   create(
+    @Body('email', ValidateEmailPipe) email: string,
     @Body('telefono', ValidateTelefonoPipe) telefono: string,
     @Body('cuil', ValidateCuilPipe) cuil: string,
     @Body() createClienteDto: CreateClienteDto,
   ) {
+    createClienteDto.email = email;
     createClienteDto.telefono = telefono;
     createClienteDto.cuil = cuil;
     return this.clienteService.create(createClienteDto);
   }
 
-  // ────────────────────────────────────────────────
   @Get()
   @ApiOperation({ summary: 'Obtiene todos los clientes registrados' })
   @ApiResponse({
@@ -58,7 +44,6 @@ export class ClienteController {
     return this.clienteService.findAll();
   }
 
-  // ────────────────────────────────────────────────
   @Get(':cuil')
   @ApiOperation({ summary: 'Obtiene un cliente por su CUIL' })
   @ApiParam({
@@ -68,11 +53,10 @@ export class ClienteController {
   })
   @ApiResponse({ status: 200, description: 'Cliente encontrado.' })
   @ApiResponse({ status: 404, description: 'Cliente no encontrado.' })
-  findOne(@Param('cuil') cuil: string) {
+  findOne(@Body('cuil', ValidateCuilPipe) cuil: string) {
     return this.clienteService.findById(cuil);
   }
 
-  // ────────────────────────────────────────────────
   @Put(':cuil')
   @UsePipes(NormalizePipe)
   @ApiOperation({ summary: 'Actualiza los datos de un cliente existente' })
@@ -92,13 +76,16 @@ export class ClienteController {
   @ApiResponse({ status: 404, description: 'Cliente no encontrado.' })
   update(
     @Body('cuil', ValidateCuilPipe) cuil: string,
+    @Body('telefono', ValidateTelefonoPipe) telefono: string,
+    @Body('email', ValidateEmailPipe) email: string,
     @Body() updateClienteDto: UpdateClienteDto,
   ) {
+    updateClienteDto.email = email;
     updateClienteDto.cuil = cuil;
-    return this.clienteService.update(cuil, updateClienteDto);
+    updateClienteDto.telefono = telefono;
+    return this.clienteService.update(updateClienteDto);
   }
 
-  // ────────────────────────────────────────────────
   @Delete(':cuil')
   @ApiOperation({ summary: 'Elimina lógicamente un cliente' })
   @ApiParam({
@@ -108,7 +95,7 @@ export class ClienteController {
   })
   @ApiResponse({ status: 200, description: 'Cliente eliminado correctamente.' })
   @ApiResponse({ status: 404, description: 'Cliente no encontrado.' })
-  remove(@Param('cuil') cuil: string) {
+  remove(@Body('cuil', ValidateCuilPipe) cuil: string) {
     return this.clienteService.softDelete(cuil);
   }
 }

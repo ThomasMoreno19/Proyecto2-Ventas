@@ -1,36 +1,40 @@
+// main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-<<<<<<< HEAD
-import { ValidationPipe } from '@nestjs/common';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bodyParser: false, // Required for Better Auth
-  });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
-=======
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
+
+  app.enableCors({
+    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    credentials: true, // si usás cookies/sesión
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
     .setDescription('Documentación de la API con Swagger')
     .setVersion('1.0')
-    .addBearerAuth() // si usás JWT
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
->>>>>>> 0ef94826c494c445fdbbee0e15304ee07878d50f
-  await app.listen(process.env.PORT ?? 3000);
+  // Agregar el puerto y el listen
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
+  console.log(`📚 Documentación disponible en http://localhost:${port}/api/docs`);
 }
-bootstrap();
+
+// Cambiar void bootstrap() por una llamada async
+bootstrap().catch((error) => {
+  console.error('Error al iniciar la aplicación:', error);
+  process.exit(1);
+});
