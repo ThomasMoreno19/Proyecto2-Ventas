@@ -4,8 +4,8 @@ import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
 import { LineaDto } from './dto/linea.dto';
 import { toLineaDto } from './mappers/linea.mapper';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
+import { PrismaService } from '../prisma/prisma.service';
+import { checkUniqueName } from '../common/helpers/check.nombre.helper';
 import { canDelete } from './helpers/check.producto';
 
 @Injectable()
