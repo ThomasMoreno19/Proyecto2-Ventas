@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UsePipes,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UsePipes, Put } from '@nestjs/common';
 import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
@@ -41,10 +32,7 @@ export class MarcaController {
   @ApiOkResponse({ type: MarcaDto })
   @Put(':nombre')
   @UsePipes(NormalizePipe)
-  update(
-    @Param('nombre') nombre: string,
-    @Body() updateMarcaDto: UpdateMarcaDto,
-  ) {
+  update(@Param('nombre') nombre: string, @Body() updateMarcaDto: UpdateMarcaDto) {
     return this.marcaService.update(nombre, updateMarcaDto);
   }
 

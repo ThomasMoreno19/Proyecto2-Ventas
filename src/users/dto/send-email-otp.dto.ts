@@ -11,5 +11,3 @@ export class SendEmailOtpDto {
   @IsIn(['email-verification', 'forget-password'])
   type!: EmailOtpType;
 }
-
-

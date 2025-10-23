@@ -5,13 +5,13 @@ export class LineaDto {
     example: '68f0602ae29a2c2e0ff28625',
     description: 'ID de la línea',
   })
-  id: string;
+  id!: string;
 
   @ApiProperty({
     example: 'Ropa deportiva',
     description: 'Nombre de la línea',
   })
-  nombre: string;
+  nombre!: string;
 
   @ApiProperty({
     example: 'Ropa para hacer deporte',

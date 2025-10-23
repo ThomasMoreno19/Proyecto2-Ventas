@@ -15,10 +15,7 @@ export class PrismaUsersRepository implements UsersRepository {
     return user as unknown as UserEntity | null;
   }
 
-  async updateEmailVerified(
-    id: string,
-    verified: boolean,
-  ): Promise<UserEntity> {
+  async updateEmailVerified(id: string, verified: boolean): Promise<UserEntity> {
     const updated = await prisma.user.update({
       where: { id },
       data: { emailVerified: verified },

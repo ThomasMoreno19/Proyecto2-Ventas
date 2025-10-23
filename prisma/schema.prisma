@@ -99,27 +99,6 @@ model DetalleVenta {
   @@map("detalle_venta")
 }
 
-model Marca {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
-  descripcion String?
-  logo        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  deletedAt   DateTime?
-  productos Product[]
-}
-
-model Linea {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
-  descripcion String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  deletedAt   DateTime?
-  productos Product[]
-}
-
 model Product {
   id            String        @id @map("_id")
   name          String
@@ -127,10 +106,9 @@ model Product {
   price         Float
   stock         Int
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
+  updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
-<<<<<<< HEAD
   marcaXLineaId String?       @db.ObjectId
   marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
 }
@@ -144,10 +122,39 @@ model Cliente {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   deletedAt   DateTime?
-=======
-  marcaId       String
-  marca Marca   @relation(fields: [marcaId], references: [id])
-  lineaId       String
-  linea Linea   @relation(fields: [marcaId], references: [id])
->>>>>>> 0ef94826c494c445fdbbee0e15304ee07878d50f
+}
+
+model Marca {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcasLineas MarcaXLinea[]
+}
+
+model Linea {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcasLineas MarcaXLinea[]
+}
+
+model MarcaXLinea {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId   String   @db.ObjectId
+  lineaId   String   @db.ObjectId
+
+  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Cascade)
+  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  productos Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("marca_x_linea")
 }

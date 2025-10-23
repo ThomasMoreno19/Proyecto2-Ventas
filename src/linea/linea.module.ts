@@ -8,5 +8,6 @@ import { LineaController } from './linea.controller';
   imports: [],
   controllers: [LineaController],
   providers: [PrismaService, LineaRepository, LineaService],
+  exports: [LineaService],
 })
 export class LineaModule {}
