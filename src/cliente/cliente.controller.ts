@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/s
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
-import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
+import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import { ValidateCuilPipe } from './pipe/normalize-cuil.pipe';
 import { ValidateTelefonoPipe } from './pipe/normalize-telefono.pipe';
 import { ValidateEmailPipe } from './pipe/normalize-email.pipe';

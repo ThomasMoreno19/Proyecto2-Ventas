@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import { UpdateClienteDto } from '../dto/update-cliente.dto';
 import { Cliente } from '@prisma/client';

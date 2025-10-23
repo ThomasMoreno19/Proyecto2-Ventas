@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export async function canDelete(prisma: PrismaService, lineaId: string): Promise<boolean> {
   // Buscar productos cuya marcaXLinea referencie la linea

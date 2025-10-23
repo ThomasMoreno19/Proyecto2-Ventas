@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, UsePipes, Put } from '@nest
 import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
-import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
+import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
 import { MarcaDto } from './dto/marca.dto';
 

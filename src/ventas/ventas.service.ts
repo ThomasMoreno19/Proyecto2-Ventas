@@ -14,13 +14,7 @@ export class VentasService {
     return this.ventasRepository.create(dto);
   }
 
-  findAll(query?: {
-    skip?: number;
-    take?: number;
-    usuarioId?: string;
-    from?: Date;
-    to?: Date;
-  }) {
+  findAll(query?: { skip?: number; take?: number; usuarioId?: string; from?: Date; to?: Date }) {
     return this.ventasRepository.findAll(query);
   }
 

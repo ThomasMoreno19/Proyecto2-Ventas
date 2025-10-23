@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export async function canDelete(prisma: PrismaService, marcaId: string): Promise<boolean> {
   const productosCount = await prisma.product.count({

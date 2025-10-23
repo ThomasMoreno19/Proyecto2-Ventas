@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMarcaXlineaDto } from './dto/create-marca-xlinea.dto';
-import { UpdateMarcaXlineaDto } from './dto/update-marca-xlinea.dto';
 
 @Injectable()
 export class MarcaXlineaService {
-  create(createMarcaXlineaDto: CreateMarcaXlineaDto) {
+  create() {
     return 'This action adds a new marcaXlinea';
   }
 
@@ -16,7 +14,7 @@ export class MarcaXlineaService {
     return `This action returns a #${id} marcaXlinea`;
   }
 
-  update(id: number, updateMarcaXlineaDto: UpdateMarcaXlineaDto) {
+  update(id: number) {
     return `This action updates a #${id} marcaXlinea`;
   }
 

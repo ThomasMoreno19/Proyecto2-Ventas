@@ -1,4 +1,4 @@
-import { auth } from 'src/lib/auth';
+import { auth } from '../../lib/auth';
 
 type UserBase = typeof auth.$Infer.Session.user;
 
