@@ -11,7 +11,7 @@ import {
 import { LineaService } from './linea.service';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
-import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
+import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import {
   ApiNoContentResponse,
   ApiOkResponse,
