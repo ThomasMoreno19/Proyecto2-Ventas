@@ -1,33 +1,49 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import type { IProductRepository } from './repositories/product.repository.interface';
-import { Product } from '@prisma/client';
+import { ProductMapper } from './mappers/product.mapper';
+import { ProductDto } from './dto/product.dto';
+import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @Inject('IProductRepository')
     private readonly repository: IProductRepository,
+    private readonly prisma: PrismaService,
   ) {}
 
-  create(createProductDto: CreateProductDto): Promise<Product> {
-    return this.repository.create(createProductDto);
+  async create(createProductDto: CreateProductDto): Promise<ProductDto> {
+    await checkUniqueName(this.prisma, 'product', createProductDto.name);
+
+    const producto = await this.repository.create(createProductDto);
+    return ProductMapper.toProductDto(producto);
   }
 
-  findAll(): Promise<Product[]> {
-    return this.repository.findAll();
+
+  async findAll(): Promise<ProductDto[]> {
+    const productos = await this.repository.findAll();
+    return productos.map(ProductMapper.toProductDto);
   }
 
-  findOne(id: string): Promise<Product | null> {
-    return this.repository.findOne(id);
+  async findOne(id: string): Promise<ProductDto | null> {
+    const producto = await this.repository.findOne(id);
+    if (!producto) {
+      throw new NotFoundException(`Producto con id ${id} no encontrado`)
+    }
+    return ProductMapper.toProductDto(producto);
   }
 
-  update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    return this.repository.update(id, updateProductDto);
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductDto> {
+    const producto = await this.repository.update(id, updateProductDto);
+    return ProductMapper.toProductDto(producto);
   }
 
-  softDelete(id: string): Promise<Product> {
-    return this.repository.softDelete(id);
+  async softDelete(id: string): Promise<void> {
+    await this.repository.softDelete(id);
   }
+
 }
+

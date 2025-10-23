@@ -3,36 +3,74 @@ import { IProductRepository } from './product.repository.interface';
 import prisma from '../../lib/db';  
 import { CreateProductDto } from '../dto/create-product.dto';
 import { Product } from '@prisma/client';
-import { ProductEntity } from '../entities/product.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProductDto } from '../dto/update-product.dto';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
-    create(data: CreateProductDto): Promise<Product> {
-        return prisma.product.create({data});
-    }
+    constructor(private readonly prisma: PrismaService) {}
 
-    findAll(): Promise<Product[]> {
-        return prisma.product.findMany({ 
-            where: { deletedAt: null} 
-        });
-    }
-    findOne(id: string): Promise<Product | null> {
-        return prisma.product.findUnique({
-            where: { id, deletedAt: null },
-        });   
-    }
-    update(id: string, data: UpdateProductDto): Promise<Product> {
-        return prisma.product.update({
-            where: { id },
-            data,
+    async create(data: CreateProductDto): Promise<Product> {
+        return this.prisma.product.create({
+            data: {
+                name: data.name,
+                description: data.description ?? null,
+                price: data.price,
+                stock: data.stock,
+                marcaXLineaId: data.marcaXLineaId ?? null,
+                deletedAt: null, // explícito
+            },
         });
     }
 
-    softDelete(id: string): Promise<Product> {
-        return prisma.product.update({
+    async findAll(): Promise<Product[]> {
+        const productos = await this.prisma.product.findMany();
+        return productos.filter((producto) => !producto.deletedAt); 
+    }
+
+    async findOne(id: string): Promise<Product | null> {
+        const producto = await this.prisma.product.findFirst({ 
+            where: { id }
+        });
+
+        if(!producto || producto.deletedAt) {
+            return null;
+        }
+
+        return producto;
+    }   
+
+    async update(id: string, data: UpdateProductDto): Promise<Product> {
+        const producto = await this.prisma.product.findFirst({ 
+            where: { id }
+        });
+
+        if(!producto || producto.deletedAt) {
+            throw new Error(`El producto con id ${id} no existe`);
+        }
+
+        return this.prisma.product.update({
             where: { id },
-            data: { deletedAt: new Date() },
+            data: {
+                ...data,
+            },
+        });
+    }
+
+    async softDelete(id: string): Promise<void> {
+        const producto = await this.prisma.product.findFirst({ 
+            where: { id }
+        });
+
+        if(!producto || producto.deletedAt) {
+            throw new Error(`El producto con id ${id} no existe`);
+        }
+
+        await this.prisma.product.update({
+            where: { id },
+            data: {
+                deletedAt: new Date(),
+            },
         });
     }
 }
