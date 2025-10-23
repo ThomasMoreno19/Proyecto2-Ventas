@@ -8,8 +8,8 @@ import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { MarcaDto } from './dto/marca.dto';
 import { toMarcaDto } from './mappers/marca.mapper';
-import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { checkUniqueName } from '../common/helpers/check.nombre.helper';
+import { PrismaService } from '../prisma/prisma.service';
 import { canDelete } from './helpers/check.producto';
 
 @Injectable()
