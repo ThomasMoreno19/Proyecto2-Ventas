@@ -1,7 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import type { IProductRepository } from './repositories/product.repository.interface';
+import { ProductRepository } from './repositories/product.repository';
 import { ProductMapper } from './mappers/product.mapper';
 import { ProductDto } from './dto/product.dto';
 import { checkUniqueName } from 'src/common/helpers/check.nombre.helper';
@@ -10,8 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class ProductService {
   constructor(
-    @Inject('IProductRepository')
-    private readonly repository: IProductRepository,
+    private readonly repository: ProductRepository,
     private readonly prisma: PrismaService,
   ) {}
 

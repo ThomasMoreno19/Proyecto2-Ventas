@@ -129,7 +129,7 @@ model Marca {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
-  marcasLineas MarcaXLinea[]
+  lineas    MarcaXLinea[]
 }
 
 model Linea {
@@ -147,10 +147,6 @@ model MarcaXLinea {
   marcaId   String    @db.ObjectId
   lineaId   String    @db.ObjectId
   productos Product[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  marca Marca @relation(fields: [marcaId], references: [id])
-  linea Linea @relation(fields: [lineaId], references: [id])
+  marca    Marca    @relation(fields: [marcaId], references: [id])
+  linea    Linea    @relation(fields: [lineaId], references: [id])
 }

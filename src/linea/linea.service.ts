@@ -7,6 +7,7 @@ import { toLineaDto } from './mappers/linea.mapper';
 import { PrismaService } from '../prisma/prisma.service';
 import { checkUniqueName } from '../common/helpers/check.nombre.helper';
 import { canDelete } from './helpers/check.producto';
+import { asociarMarcas } from './helpers/marcaxlinea.helper';
 
 @Injectable()
 export class LineaService {
@@ -30,14 +31,31 @@ export class LineaService {
 
   async create(dto: CreateLineaDto): Promise<LineaDto> {
     await checkUniqueName(this.prisma, 'linea', dto.nombre);
-
     const linea = await this.lineaRepository.create(dto);
+    await asociarMarcas({
+      prisma: this.prisma,
+      lineaId: linea.id,
+      marcaIds: dto.marcaIds,
+    });
+
     return toLineaDto(linea);
   }
 
-  async update(nombre: string, dto: UpdateLineaDto): Promise<LineaDto> {
-    const linea = await this.lineaRepository.update(nombre, dto);
-    return toLineaDto(linea);
+  async update(nombre: string, dto: UpdateLineaDto) {
+    const linea = await this.prisma.linea.findUnique({ where: { nombre } });
+    if (!linea) throw new NotFoundException(`No se encontró la línea '${nombre}'.`);
+
+    const updatedLinea = await this.lineaRepository.update(nombre, dto);
+
+    if (dto.marcaIds?.length) {
+      await asociarMarcas({
+        prisma: this.prisma,
+        lineaId: linea.id,
+        marcaIds: dto.marcaIds,
+      });
+    }
+
+    return toLineaDto(updatedLinea);
   }
 
   async softDelete(nombre: string): Promise<void> {
