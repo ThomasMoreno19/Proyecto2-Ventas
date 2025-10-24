@@ -8,4 +8,4 @@ import { ClienteController } from './cliente.controller';
   controllers: [ClienteController],
   providers: [PrismaService, ClienteRepository, ClienteService],
 })
-export class clienteModule {}
+export class ClienteModule {}

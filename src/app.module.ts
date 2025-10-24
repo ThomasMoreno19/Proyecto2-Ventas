@@ -10,7 +10,8 @@ import { MarcaModule } from './marca/marca.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LineaModule } from './linea/linea.module';
 import { MarcaXlineaModule } from './marca-xlinea/marca-xlinea.module';
-import { clienteModule } from './cliente/cliente.module';
+import { ClienteModule } from './cliente/cliente.module';
+import { ProductModule } from './Product/product.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { clienteModule } from './cliente/cliente.module';
       disableGlobalAuthGuard: true,
     }),
     UsersModule,
-    clienteModule,
+    ClienteModule,
+    ProductModule,
     VentasModule,
     MarcaModule,
     PrismaModule,

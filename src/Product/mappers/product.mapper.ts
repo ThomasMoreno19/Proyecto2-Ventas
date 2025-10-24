@@ -6,10 +6,8 @@ export class ProductMapper {
     const dto: ProductDto = {
       id: product.id,
       name: product.name,
-      description: product.description ?? undefined,
-      price: product.price,
-      stock: product.stock,
-      marcaXLineaId: product.marcaXLineaId ?? undefined,
+      description: product.description ?? '',
+      marcaXLineaId: product.marcaXLineaId,
     };
     return dto;
   }
