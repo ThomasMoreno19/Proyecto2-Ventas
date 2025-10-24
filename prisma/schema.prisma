@@ -149,8 +149,8 @@ model MarcaXLinea {
   marcaId   String   @db.ObjectId
   lineaId   String   @db.ObjectId
 
-  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Cascade)
-  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  marca     Marca    @relation(fields: [marcaId], references: [id])
+  linea     Linea    @relation(fields: [lineaId], references: [id])
   productos Product[]
 
   createdAt DateTime @default(now())
