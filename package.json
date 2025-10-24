@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.1",
     "@prisma/client": "^6.17.1",
+    "@thallesp/nestjs-better-auth": "^2.1.0",
     "mongodb": "^6.20.0",
     "prisma": "^6.17.1",
     "reflect-metadata": "^0.2.2",
