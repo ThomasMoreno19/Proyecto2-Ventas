@@ -11,14 +11,24 @@ export class MarcaRepository implements IMarcaRepository {
 
   // Crear una nueva marca
   async create(data: CreateMarcaDto): Promise<Marca> {
-    return this.prisma.marca.create({
-      data: {
-        nombre: data.nombre,
-        descripcion: data.descripcion ?? null,
-        logo: data.logo ?? null,
-        deletedAt: null, // explícito
-      },
-    });
+    try {
+      return await this.prisma.marca.create({
+        data: {
+          nombre: data.nombre,
+          descripcion: data.descripcion ?? null,
+          deletedAt: null, // explícito
+        },
+      });
+    } catch (error) {
+      const prismaError = error as { code?: string }; // Type assertion
+      if (prismaError.code === 'P2002') {
+        throw new Error(`Marca duplicada: ${data.nombre}`);
+      }
+      if (error instanceof Error) {
+        throw new Error(`Error al crear la marca: ${error.message}`);
+      }
+      throw new Error(`Error al crear la marca: ${String(error)}`);
+    }
   }
 
   // Traer todas las marcas activas

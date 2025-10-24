@@ -7,10 +7,7 @@ import { LineaController } from './linea.controller';
 @Module({
   imports: [],
   controllers: [LineaController],
-  providers: [
-    PrismaService,
-    LineaRepository,
-    LineaService,
-  ],
+  providers: [PrismaService, LineaRepository, LineaService],
+  exports: [LineaService],
 })
 export class LineaModule {}

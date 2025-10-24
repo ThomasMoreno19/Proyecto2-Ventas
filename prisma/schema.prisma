@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,46 +7,96 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Marca {
-  id          String        @id @map("_id")
-  nombre      String       
-  descripcion String?
-  logo        String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
-  deletedAt   DateTime?
-  marcaXLineas MarcaXLinea[]
-  marcaXLineas MarcaXLinea[]
-
-  @@unique([name])
+enum Role {
+  USER
+  ADMIN
 }
 
-model Linea {
-  id          String        @id @map("_id")
-  nombre      String        
-  descripcion String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
-  deletedAt   DateTime?
-  marcaXLineas MarcaXLinea[]
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  role          Role      @default(USER)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  ventas        Venta[]   // relación 1:N
+
+  @@map("user")
 }
 
-model MarcaXLinea {
-  id        String          @id @map("_id")
-  marcaId   String          @db.ObjectId
-  lineaId   String          @db.ObjectId
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  marca     Marca           @relation(fields: [marcaId], references: [id])
-  linea     Linea           @relation(fields: [lineaId], references: [id])
+  @@map("session")
+}
 
-  productos Product[]  
+model Account {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  accountId             String
+  providerId            String
+  userId                String    @db.ObjectId
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @default(now()) @updatedAt
-  deletedAt DateTime?
+  @@map("account")
+}
 
+model Verification {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@unique([marcaId, lineaId])
+  @@map("verification")
+}
+
+model Venta {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  fecha        DateTime       @default(now())        // <- renombrado desde 'date'
+  usuarioId    String         @db.ObjectId
+  usuario      User           @relation(fields: [usuarioId], references: [id])
+  detalleVenta DetalleVenta[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("venta")
+}
+
+model DetalleVenta {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  ventaId        String   @db.ObjectId
+  venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  producto       String                         // <- agregado
+  cantidad       Int
+  precioUnitario Float                          // <- agregado (en Mongo no hay Decimal nativo en Prisma; si querés Decimal128, ver nota)
+  subtotal       Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([ventaId])
+  @@map("detalle_venta")
 }
 
 model Product {
@@ -62,12 +106,55 @@ model Product {
   price         Float
   stock         Int
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
+  updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
   marcaXLineaId String?       @db.ObjectId
   marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
-  marcaXLineas  MarcaXLinea[]
+}
 
-    @@unique([name])
+model Cliente {
+  cuil        String   @id @map("_id")
+  nombre      String
+  apellido    String
+  telefono    String?
+  email       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  deletedAt   DateTime?
+}
+
+model Marca {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcasLineas MarcaXLinea[]
+}
+
+model Linea {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  marcasLineas MarcaXLinea[]
+}
+
+model MarcaXLinea {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId   String   @db.ObjectId
+  lineaId   String   @db.ObjectId
+
+  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Cascade)
+  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  productos Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("marca_x_linea")
 }

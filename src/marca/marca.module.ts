@@ -6,10 +6,6 @@ import { MarcaController } from './marca.controller';
 
 @Module({
   controllers: [MarcaController],
-  providers: [
-    PrismaService,
-    MarcaRepository,
-    MarcaService,
-  ],
+  providers: [PrismaService, MarcaRepository, MarcaService],
 })
 export class MarcaModule {}
