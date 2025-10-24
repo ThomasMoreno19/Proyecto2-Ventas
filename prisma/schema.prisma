@@ -23,7 +23,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
-  ventas        Venta[]   // relación 1:N
+  ventas        Venta[]
 
   @@map("user")
 }
@@ -74,7 +74,7 @@ model Verification {
 
 model Venta {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  fecha        DateTime       @default(now())        // <- renombrado desde 'date'
+  fecha        DateTime       @default(now()) // <- renombrado desde 'date'
   usuarioId    String         @db.ObjectId
   usuario      User           @relation(fields: [usuarioId], references: [id])
   detalleVenta DetalleVenta[]
@@ -88,9 +88,9 @@ model DetalleVenta {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   ventaId        String   @db.ObjectId
   venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
-  producto       String                         // <- agregado
+  producto       String
   cantidad       Int
-  precioUnitario Float                          // <- agregado (en Mongo no hay Decimal nativo en Prisma; si querés Decimal128, ver nota)
+  precioUnitario Float
   subtotal       Float
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -100,61 +100,57 @@ model DetalleVenta {
 }
 
 model Product {
-  id            String        @id @map("_id")
-  name          String
-  description   String?
-  price         Float
-  stock         Int
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  marcaXLineaId String?       @db.ObjectId
-  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+  marcaXLineaId String      @db.ObjectId
+  marcaXLinea   MarcaXLinea @relation(fields: [marcaXLineaId], references: [id])
 }
 
 model Cliente {
-  cuil        String   @id @map("_id")
-  nombre      String
-  apellido    String
-  telefono    String?
-  email       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  deletedAt   DateTime?
+  cuil      String    @id @map("_id")
+  nombre    String
+  apellido  String
+  telefono  String?
+  email     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
 }
 
 model Marca {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
-  descripcion String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre       String        @unique
+  descripcion  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
   marcasLineas MarcaXLinea[]
 }
 
 model Linea {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String  @unique
-  descripcion String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre       String        @unique
+  descripcion  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
   marcasLineas MarcaXLinea[]
 }
 
 model MarcaXLinea {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  marcaId   String   @db.ObjectId
-  lineaId   String   @db.ObjectId
-
-  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Cascade)
-  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId   String    @db.ObjectId
+  lineaId   String    @db.ObjectId
   productos Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  @@map("marca_x_linea")
+  marca Marca @relation(fields: [marcaId], references: [id])
+  linea Linea @relation(fields: [lineaId], references: [id])
 }

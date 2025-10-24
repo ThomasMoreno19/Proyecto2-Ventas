@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 // Verifica que el nombre sea único en la tabla especificada
 export async function checkUniqueName(
   prisma: PrismaService,
-  model: 'marca' | 'linea',
+  model: 'marca' | 'linea' | 'product',
   nombre: string,
 ) {
   const exists = await prisma.$transaction(async (tx) => {
