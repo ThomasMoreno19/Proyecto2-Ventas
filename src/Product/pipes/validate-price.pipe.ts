@@ -17,9 +17,7 @@ export class ValidatePricePipe implements PipeTransform {
       const price = obj['price'];
 
       if (price != null && typeof price !== 'number') {
-        throw new BadRequestException(
-          'El precio debe ser un número o cadena numérica',
-        );
+        throw new BadRequestException('El precio debe ser un número o cadena numérica');
       }
 
       const numPrice = Number(price);

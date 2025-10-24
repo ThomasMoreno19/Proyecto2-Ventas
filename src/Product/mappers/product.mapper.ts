@@ -5,11 +5,9 @@ export class ProductMapper {
   static toProductDto(product: Product): ProductDto {
     const dto: ProductDto = {
       id: product.id,
-      name: product.name,
-      description: product.description ?? undefined,
-      price: product.price,
-      stock: product.stock,
-      marcaXLineaId: product.marcaXLineaId ?? undefined,
+      nombre: product.nombre,
+      descripcion: product.descripcion ?? undefined,
+      marcaXLineaId: product.marcaXLineaId,
     };
     return dto;
   }

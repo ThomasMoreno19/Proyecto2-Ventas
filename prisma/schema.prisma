@@ -100,17 +100,15 @@ model DetalleVenta {
 }
 
 model Product {
-  id            String        @id @map("_id")
-  name          String        
-  description   String?
-  price         Float
-  stock         Int
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre        String        
+  descripcion   String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
-  marcaXLineaId String?       @db.ObjectId
-  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+  marcaXLineaId String       @db.ObjectId
+  marcaXLinea   MarcaXLinea  @relation(fields: [marcaXLineaId], references: [id])
 }
 
 model Cliente {
@@ -149,8 +147,8 @@ model MarcaXLinea {
   marcaId   String   @db.ObjectId
   lineaId   String   @db.ObjectId
 
-  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Cascade)
-  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Restrict)
+  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Restrict)
   productos Product[]
 
   createdAt DateTime @default(now())
