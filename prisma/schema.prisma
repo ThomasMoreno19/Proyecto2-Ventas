@@ -13,7 +13,7 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid()) @map("_id")
   name          String
   email         String    @unique
   emailVerified Boolean   @default(false)
@@ -21,32 +21,33 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
   sessions      Session[]
   accounts      Account[]
-  ventas        Venta[]
+  ventas        Venta[]   // relación 1:N
 
   @@map("user")
 }
 
 model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(uuid()) @map("_id")
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String @id @default(uuid()) @map("_id")
   accountId             String
   providerId            String
-  userId                String    @db.ObjectId
+  userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
@@ -74,14 +75,15 @@ model Verification {
 
 model Venta {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  fecha        DateTime       @default(now())
-  usuarioId    String         @db.ObjectId
+  fecha        DateTime       @default(now())        // <- renombrado desde 'date'
+  usuarioId    String
   usuario      User           @relation(fields: [usuarioId], references: [id])
-  cuil         String         @db.ObjectId
+  cuil         String         
   cliente      Cliente        @relation(fields: [cuil], references: [cuil], onDelete: Cascade)
   detalleVenta DetalleVenta[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
 
   @@map("venta")
 }
@@ -96,6 +98,7 @@ model DetalleVenta {
   precioUnitario Float
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
 
   @@index([ventaId])
   @@map("detalle_venta")
@@ -129,22 +132,22 @@ model Cliente {
 }
 
 model Marca {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String        @unique
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
   descripcion String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
   lineas      MarcaXLinea[]
 }
 
 model Linea {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre       String        @unique
-  descripcion  String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  deletedAt    DateTime?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String  @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
   marcasLineas MarcaXLinea[]
 }
 
