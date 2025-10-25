@@ -3,8 +3,9 @@ import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { NormalizePipe } from 'src/common/pipes/normalize.nombre.pipe';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { ValidateProductPipe } from './pipes/validate-product.pipe';
+import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 //import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
 //import { Role } from '@prisma/client';
 
@@ -19,7 +20,7 @@ export class ProductController {
   //@UseGuards(AuthGuard)
   //@Roles([Role.ADMIN])
   @Post()
-  @UsePipes(NormalizePipe)
+  @UsePipes(ValidateProductPipe, NormalizePipe)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
@@ -54,7 +55,7 @@ export class ProductController {
   //@UseGuards(AuthGuard)
   //@Roles([Role.ADMIN])
   @Put(':id')
-  @UsePipes(NormalizePipe)
+  @UsePipes(ValidateProductPipe, NormalizePipe)
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(id, updateProductDto);
   }
