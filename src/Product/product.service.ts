@@ -15,7 +15,7 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<ProductDto> {
-    await checkUniqueName(this.prisma, 'product', createProductDto.name);
+    await checkUniqueName(this.prisma, 'product', createProductDto.nombre);
 
     const producto = await this.repository.create(createProductDto);
     return ProductMapper.toProductDto(producto);
@@ -34,10 +34,7 @@ export class ProductService {
     return ProductMapper.toProductDto(producto);
   }
 
-  async update(
-    id: string,
-    updateProductDto: UpdateProductDto,
-  ): Promise<ProductDto> {
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductDto> {
     const producto = await this.repository.update(id, updateProductDto);
     return ProductMapper.toProductDto(producto);
   }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class ProductDto {
   @ApiProperty({
@@ -9,7 +10,6 @@ export class ProductDto {
   })
   @IsString()
   id!: string;
-
   @ApiProperty({
     example: 'Laptop Dell XPS 13',
     description: 'Nombre del producto',
@@ -17,8 +17,7 @@ export class ProductDto {
   })
   @IsString()
   @IsNotEmpty()
-  name!: string;
-
+  nombre!: string;
   @ApiProperty({
     example: 'Una laptop ultradelgada con pantalla de 13 pulgadas',
     description: 'Descripción del producto',
@@ -26,12 +25,29 @@ export class ProductDto {
   })
   @IsOptional()
   @IsString()
-  description?: string;
-
+  descripcion?: string;
+  @ApiProperty({
+    example: 1000,
+    description: 'Precio del producto',
+    required: true,
+  })
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  precio!: number;
+  @ApiProperty({
+    example: 50,
+    description: 'Cantidad en stock del producto',
+    required: true,
+  })
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  stock!: number;
   @ApiProperty({
     example: 'marcaXLinea-123',
     description: 'ID de la marcaXLinea',
-    required: false,
+    required: true,
   })
   @IsString()
   marcaXLineaId!: string;

@@ -25,6 +25,7 @@ import { ProductModule } from './product/product.module';
     MarcaModule,
     PrismaModule,
     LineaModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

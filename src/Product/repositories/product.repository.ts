@@ -12,9 +12,12 @@ export class ProductRepository implements IProductRepository {
   async create(data: CreateProductDto): Promise<Product> {
     return this.prisma.product.create({
       data: {
-        name: data.name,
-        description: data.description,
+        nombre: data.nombre,
+        descripcion: data.descripcion ?? null,
+        precio: data.precio,
+        stock: data.stock,
         marcaXLineaId: data.marcaXLineaId,
+        deletedAt: null, // explícito
       },
     });
   }
