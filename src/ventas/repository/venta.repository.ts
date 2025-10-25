@@ -141,31 +141,3 @@ export class PrismaVentaRepository implements VentaRepository {
     return { ok: true };
   }
 }
-
-type DetalleEntity = NonNullable<Venta['detalleVenta']>[number];
-
-function toVentaEntity(v: VentaWithDetalle): Venta {
-  const detalles: VentaWithDetalle['detalleVenta'] = v.detalleVenta ?? [];
-  const total = detalles.reduce((a, d) => a + Number(d.subtotal), 0);
-
-  return {
-    id: v.id,
-    usuarioId: v.usuarioId,
-    fecha: new Date(v.fecha),
-    total,
-    createdAt: new Date(v.createdAt),
-    updatedAt: new Date(v.updatedAt),
-    detalleVenta: detalles.map(
-      (d): DetalleEntity => ({
-        id: d.id,
-        ventaId: d.ventaId,
-        producto: d.producto,
-        cantidad: Number(d.cantidad),
-        precioUnitario: Number(d.precioUnitario),
-        subtotal: Number(d.subtotal),
-        createdAt: new Date(d.createdAt),
-        updatedAt: new Date(d.updatedAt),
-      }),
-    ),
-  };
-}
