@@ -14,6 +14,8 @@ export class ProductRepository implements IProductRepository {
       data: {
         nombre: data.nombre,
         descripcion: data.descripcion ?? null,
+        precio: data.precio,
+        stock: data.stock,
         marcaXLineaId: data.marcaXLineaId,
         deletedAt: null, // explícito
       },
