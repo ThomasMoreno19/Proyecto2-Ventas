@@ -112,7 +112,7 @@ model Product {
 }
 
 model Cliente {
-  cuil      String    @id @map("_id")
+  cuil      String    @id @map("_id") 
   nombre    String
   apellido  String
   telefono  String?

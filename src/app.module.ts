@@ -10,7 +10,7 @@ import { MarcaModule } from './marca/marca.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LineaModule } from './linea/linea.module';
 import { ClienteModule } from './cliente/cliente.module';
-import { ProductModule } from './Product/product.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [

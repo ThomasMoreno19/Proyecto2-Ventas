@@ -59,11 +59,10 @@ export class ClienteRepository implements IClienteRepository {
     // Opcional: normalizar/validar campos antes de persistir
     const payload = {
       ...updateData,
-      updatedAt: new Date(),
     };
 
     return this.prisma.cliente.update({
-      where: { cuil },
+      where: { cuil: cuil },
       data: payload,
     });
   }
@@ -71,7 +70,7 @@ export class ClienteRepository implements IClienteRepository {
   // Soft-delete por cuil
   async softDelete(cuil: string): Promise<DeleteClienteDto> {
     const cliente = await this.prisma.cliente.findFirst({
-      where: { cuil },
+      where: { cuil: cuil },
     });
 
     if (!cliente || cliente.deletedAt) {
