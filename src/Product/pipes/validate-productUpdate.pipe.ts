@@ -1,10 +1,7 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ValidateProductUpdatePipe implements PipeTransform {
-  constructor(private readonly prisma: PrismaService) {}
-
   transform(value: unknown) {
     console.log(JSON.stringify(value), `Tipo: ${typeof value})`);
     if (value == null) {

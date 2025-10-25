@@ -1,10 +1,8 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class ValidateProductPipe implements PipeTransform {
-  constructor(private readonly prisma: PrismaService) {}
   private readonly logger = new Logger(ValidateProductPipe.name);
 
   transform(value: unknown) {
