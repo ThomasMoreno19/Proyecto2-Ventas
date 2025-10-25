@@ -4,50 +4,60 @@ import type { Prisma } from '@prisma/client';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import type { VentaRepository } from './venta.interface.repository';
-import { Venta } from '@prisma/client';
 
-type VentaWithDetalle = Prisma.VentaGetPayload<{
-  include: { detalleVenta: true };
+export type VentaWithAllRelations = Prisma.VentaGetPayload<{
+  include: {
+    cliente: true;
+    usuario: true;
+    detalleVenta: {
+      include: {
+        producto: true;
+      };
+    };
+  };
 }>;
 
 @Injectable()
 export class PrismaVentaRepository implements VentaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateVentaDto): Promise<VentaWithDetalle> {
-    // Mapeamos los detalles del DTO a la estructura de CreateInput de Prisma
-    // Asumiendo que el Service ya inyectó el precioUnitario en el DTO (usando 'any' temporalmente)
-    // y que el producto ya existe.
+  async create(data: CreateVentaDto): Promise<VentaWithAllRelations> {
     const detalleCreateInput: Prisma.DetalleVentaCreateWithoutVentaInput[] = data.detalleVenta.map(
-      (d: any) => ({
+      (d) => ({
         cantidad: d.cantidad,
         precioUnitario: d.precioUnitario,
         producto: {
-          connect: {
-            id: d.productoId,
-          },
+          connect: { id: d.productoId },
         },
       }),
     );
 
-    // Ejecución de la escritura anidada dentro de la transacción.
+    // Usa VentaCreateInput (con relaciones)
+    const ventaCreateInput: Prisma.VentaCreateInput = {
+      fecha: data.fecha,
+      usuario: { connect: { id: data.usuarioId } }, // relación
+      cliente: { connect: { cuil: data.cuil } }, // relación
+      detalleVenta: { create: detalleCreateInput },
+    };
+
+    // 🚨 CORRECCIÓN: Usar 'await' para resolver la transacción y confiar en la inferencia
     const createdVenta = await this.prisma.$transaction(async (tx) => {
       return tx.venta.create({
-        data: {
-          fecha: data.fecha,
-          usuarioId: data.usuarioId,
-          cuil: data.cuil, 
-          detalleVenta: {
-            create: detalleCreateInput,
-          },
-        },
+        data: ventaCreateInput,
+        // Incluir todas las relaciones requeridas por el tipo de retorno
         include: {
-          detalleVenta: true,
+          cliente: true,
+          usuario: true,
+          detalleVenta: {
+            include: { producto: true },
+          },
         },
       });
     });
 
-    return createdVenta as VentaWithDetalle;
+    // 🚨 Eliminamos el 'as VentaWithAllRelations' al final del bloque $transaction.
+    // El objeto 'createdVenta' ya tiene el tipo correcto por inferencia del 'include'.
+    return createdVenta;
   }
 
   async findAll(params?: {
@@ -56,7 +66,8 @@ export class PrismaVentaRepository implements VentaRepository {
     usuarioId?: string;
     from?: Date;
     to?: Date;
-}): Promise<{ items: VentaWithDetalles[]; total: number }> {
+  }): Promise<{ items: VentaWithAllRelations[]; total: number }> {
+    // 🚨 Tipo de retorno actualizado
     const { skip = 0, take = 20, usuarioId, from, to } = params ?? {};
 
     const where: Prisma.VentaWhereInput = {};
@@ -68,71 +79,104 @@ export class PrismaVentaRepository implements VentaRepository {
     }
 
     const [rows, count] = await this.prisma.$transaction([
-        this.prisma.venta.findMany({
-            skip,
-            take,
-            where,
-            orderBy: { fecha: 'desc' },
-            include: { detalleVenta: true },
-        }),
-        this.prisma.venta.count({ where }),
+      this.prisma.venta.findMany({
+        skip,
+        take,
+        where,
+        orderBy: { fecha: 'desc' },
+        // 🚨 Incluir TODAS las relaciones
+        include: {
+          cliente: true,
+          usuario: true,
+          detalleVenta: {
+            include: { producto: true },
+          },
+        },
+      }),
+      this.prisma.venta.count({ where }),
     ]);
 
-    // 🚨 CORRECCIÓN: Eliminamos la llamada a toVentaEntity. 
-    // Los 'rows' ya tienen el tipo VentaWithDetalles.
-    return { items: rows as VentaWithDetalles[], total: count };
-}
-
-  async findOne(id: string): Promise<Venta | null> {
-    const venta = await this.prisma.venta.findUnique({
-      where: { id },
-      include: { detalleVenta: true },
-    });
-    return venta ? toVentaEntity(venta) : null;
+    // Devolvemos el array tipado con el tipo completo
+    return { items: rows as VentaWithAllRelations[], total: count };
   }
 
-  async update(id: string, data: UpdateVentaDto): Promise<Venta> {
+  async findOne(id: string): Promise<VentaWithAllRelations | null> {
+    // 🚨 Tipo de retorno actualizado
+    const venta = await this.prisma.venta.findUnique({
+      where: { id },
+      // 🚨 Incluir TODAS las relaciones
+      include: {
+        cliente: true,
+        usuario: true,
+        detalleVenta: {
+          include: { producto: true },
+        },
+      },
+    });
+    return venta as VentaWithAllRelations | null;
+  }
+
+  async update(id: string, data: UpdateVentaDto): Promise<VentaWithAllRelations> {
+    // 🚨 Tipo de retorno actualizado
     const exists = await this.prisma.venta.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Venta no encontrada');
 
     await this.prisma.$transaction(async (tx) => {
+      // 1. Actualizar campos de cabecera de Venta
       await tx.venta.update({
         where: { id },
         data: {
           fecha: data.fecha ?? undefined,
-          usuarioId: data.usuarioId ?? undefined,
+          // Usamos connect para las relaciones, pero actualizando el ID
+          usuario: data.usuarioId ? { connect: { id: data.usuarioId } } : undefined,
+          cliente: data.cuil ? { connect: { cuil: data.cuil } } : undefined,
+          // Si tu modelo permite actualizar el campo 'usuarioId'/'cuil' directamente,
+          // puedes mantener: usuarioId: data.usuarioId ?? undefined, cuil: data.cuil ?? undefined
+          // pero usar connect es más seguro para relaciones.
         },
       });
 
+      // 2. Reemplazar detalles de venta (si se proporcionan)
       if (data.detalleVenta) {
+        // Estrategia: Borrar todos los detalles existentes y recrear los nuevos
         await tx.detalleVenta.deleteMany({ where: { ventaId: id } });
+
         if (data.detalleVenta.length) {
           await tx.detalleVenta.createMany({
             data: data.detalleVenta.map((d) => ({
               ventaId: id,
-              producto: d.producto,
+              productoId: d.productoId,
               cantidad: d.cantidad,
               precioUnitario: d.precioUnitario,
-              subtotal: d.subtotal,
             })),
           });
         }
       }
     });
 
+    // 3. Obtener el objeto actualizado con todas las relaciones
     const updated = await this.prisma.venta.findUnique({
       where: { id },
-      include: { detalleVenta: true },
+      // 🚨 Incluir TODAS las relaciones
+      include: {
+        cliente: true,
+        usuario: true,
+        detalleVenta: {
+          include: { producto: true },
+        },
+      },
     });
 
     if (!updated) throw new NotFoundException('Venta no encontrada');
-    return toVentaEntity(updated);
+    return updated as VentaWithAllRelations;
   }
 
   async remove(id: string): Promise<{ ok: true }> {
     const exists = await this.prisma.venta.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Venta no encontrada');
 
+    // Asumimos que onDelete: Cascade en el esquema maneja detalleVenta,
+    // si no, la transacción explícita es correcta.
     await this.prisma.$transaction([
       this.prisma.detalleVenta.deleteMany({ where: { ventaId: id } }),
       this.prisma.venta.delete({ where: { id } }),
