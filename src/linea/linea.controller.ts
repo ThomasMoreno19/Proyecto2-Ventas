@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, UsePipes, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UsePipes,
+  Put,
+} from '@nestjs/common';
 import { LineaService } from './linea.service';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
@@ -38,7 +47,10 @@ export class LineaController {
   @ApiOkResponse({ type: LineaDto })
   @Put(':nombre')
   @UsePipes(NormalizePipe)
-  update(@Param('nombre') nombre: string, @Body() updateLineaDto: UpdateLineaDto) {
+  update(
+    @Param('nombre') nombre: string,
+    @Body() updateLineaDto: UpdateLineaDto,
+  ) {
     return this.lineaService.update(nombre, updateLineaDto);
   }
 
