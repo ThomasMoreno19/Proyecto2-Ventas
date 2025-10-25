@@ -4,12 +4,12 @@ import { AppService } from './app.service';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './lib/auth';
 import { UsersModule } from './users/users.module';
-import { VentasModule } from './ventas/ventas.module'; // ← Agrega este import
+import { VentasModule } from './ventas/ventas.module';
 import { PrismaService } from './prisma/prisma.service';
 import { MarcaModule } from './marca/marca.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LineaModule } from './linea/linea.module';
-import { clienteModule } from './cliente/cliente.module';
+import { ClienteModule } from './cliente/cliente.module';
 import { ProductModule } from './product/product.module';
 
 @Module({
@@ -19,7 +19,8 @@ import { ProductModule } from './product/product.module';
       disableGlobalAuthGuard: true,
     }),
     UsersModule,
-    clienteModule,
+    ClienteModule,
+    ProductModule,
     VentasModule,
     MarcaModule,
     PrismaModule,
