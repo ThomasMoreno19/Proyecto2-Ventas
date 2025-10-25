@@ -4,7 +4,7 @@ import type { Prisma } from '@prisma/client';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import type { VentaRepository } from './venta.interface.repository';
-import type { VentaEntity } from '../entities/venta.entity';
+import { Venta } from '@prisma/client';
 
 type VentaWithDetalle = Prisma.VentaGetPayload<{
   include: { detalleVenta: true };
@@ -14,38 +14,40 @@ type VentaWithDetalle = Prisma.VentaGetPayload<{
 export class PrismaVentaRepository implements VentaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateVentaDto): Promise<VentaEntity> {
-    // Creamos y guardamos el id dentro de la transacción
-    const ventaId = await this.prisma.$transaction(async (tx) => {
-      const v = await tx.venta.create({
+  async create(data: CreateVentaDto): Promise<VentaWithDetalle> {
+    // Mapeamos los detalles del DTO a la estructura de CreateInput de Prisma
+    // Asumiendo que el Service ya inyectó el precioUnitario en el DTO (usando 'any' temporalmente)
+    // y que el producto ya existe.
+    const detalleCreateInput: Prisma.DetalleVentaCreateWithoutVentaInput[] = data.detalleVenta.map(
+      (d: any) => ({
+        cantidad: d.cantidad,
+        precioUnitario: d.precioUnitario,
+        producto: {
+          connect: {
+            id: d.productoId,
+          },
+        },
+      }),
+    );
+
+    // Ejecución de la escritura anidada dentro de la transacción.
+    const createdVenta = await this.prisma.$transaction(async (tx) => {
+      return tx.venta.create({
         data: {
           fecha: data.fecha,
           usuarioId: data.usuarioId,
+          cuil: data.cuil, 
+          detalleVenta: {
+            create: detalleCreateInput,
+          },
+        },
+        include: {
+          detalleVenta: true,
         },
       });
-
-      if (data.detalleVenta?.length) {
-        await tx.detalleVenta.createMany({
-          data: data.detalleVenta.map((d) => ({
-            ventaId: v.id,
-            producto: d.producto,
-            cantidad: d.cantidad,
-            precioUnitario: d.precioUnitario,
-            subtotal: d.subtotal,
-          })),
-        });
-      }
-
-      return v.id;
     });
 
-    const created = await this.prisma.venta.findUnique({
-      where: { id: ventaId },
-      include: { detalleVenta: true },
-    });
-
-    if (!created) throw new NotFoundException('Venta no encontrada');
-    return toVentaEntity(created);
+    return createdVenta as VentaWithDetalle;
   }
 
   async findAll(params?: {
@@ -54,7 +56,7 @@ export class PrismaVentaRepository implements VentaRepository {
     usuarioId?: string;
     from?: Date;
     to?: Date;
-  }): Promise<{ items: VentaEntity[]; total: number }> {
+}): Promise<{ items: VentaWithDetalles[]; total: number }> {
     const { skip = 0, take = 20, usuarioId, from, to } = params ?? {};
 
     const where: Prisma.VentaWhereInput = {};
@@ -66,21 +68,22 @@ export class PrismaVentaRepository implements VentaRepository {
     }
 
     const [rows, count] = await this.prisma.$transaction([
-      this.prisma.venta.findMany({
-        skip,
-        take,
-        where,
-        orderBy: { fecha: 'desc' },
-        include: { detalleVenta: true },
-      }),
-      this.prisma.venta.count({ where }),
+        this.prisma.venta.findMany({
+            skip,
+            take,
+            where,
+            orderBy: { fecha: 'desc' },
+            include: { detalleVenta: true },
+        }),
+        this.prisma.venta.count({ where }),
     ]);
 
-    const items = rows.map((v) => toVentaEntity(v));
-    return { items, total: count };
-  }
+    // 🚨 CORRECCIÓN: Eliminamos la llamada a toVentaEntity. 
+    // Los 'rows' ya tienen el tipo VentaWithDetalles.
+    return { items: rows as VentaWithDetalles[], total: count };
+}
 
-  async findOne(id: string): Promise<VentaEntity | null> {
+  async findOne(id: string): Promise<Venta | null> {
     const venta = await this.prisma.venta.findUnique({
       where: { id },
       include: { detalleVenta: true },
@@ -88,7 +91,7 @@ export class PrismaVentaRepository implements VentaRepository {
     return venta ? toVentaEntity(venta) : null;
   }
 
-  async update(id: string, data: UpdateVentaDto): Promise<VentaEntity> {
+  async update(id: string, data: UpdateVentaDto): Promise<Venta> {
     const exists = await this.prisma.venta.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Venta no encontrada');
 
@@ -139,9 +142,9 @@ export class PrismaVentaRepository implements VentaRepository {
   }
 }
 
-type DetalleEntity = NonNullable<VentaEntity['detalleVenta']>[number];
+type DetalleEntity = NonNullable<Venta['detalleVenta']>[number];
 
-function toVentaEntity(v: VentaWithDetalle): VentaEntity {
+function toVentaEntity(v: VentaWithDetalle): Venta {
   const detalles: VentaWithDetalle['detalleVenta'] = v.detalleVenta ?? [];
   const total = detalles.reduce((a, d) => a + Number(d.subtotal), 0);
 

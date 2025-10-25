@@ -74,9 +74,11 @@ model Verification {
 
 model Venta {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  fecha        DateTime       @default(now()) // <- renombrado desde 'date'
+  fecha        DateTime       @default(now())
   usuarioId    String         @db.ObjectId
   usuario      User           @relation(fields: [usuarioId], references: [id])
+  cuil         String         @db.ObjectId
+  cliente      Cliente        @relation(fields: [cuil], references: [cuil], onDelete: Cascade)
   detalleVenta DetalleVenta[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -87,11 +89,11 @@ model Venta {
 model DetalleVenta {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   ventaId        String   @db.ObjectId
+  productoId     String   @db.ObjectId
   venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
-  producto       String
+  producto       Product  @relation(fields: [productoId], references: [id], onDelete: Cascade)
   cantidad       Int
   precioUnitario Float
-  subtotal       Float
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -100,21 +102,22 @@ model DetalleVenta {
 }
 
 model Product {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre        String        
-  descripcion   String?
-  precio        Float
-  stock         Int
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String?
+  precio      Float
+  stock       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  marcaXLineaId String       @db.ObjectId
-  marcaXLinea   MarcaXLinea  @relation(fields: [marcaXLineaId], references: [id])
+  marcaXLineaId String         @db.ObjectId
+  marcaXLinea   MarcaXLinea    @relation(fields: [marcaXLineaId], references: [id])
+  DetalleVenta  DetalleVenta[]
 }
 
 model Cliente {
-  cuil      String    @id @map("_id") 
+  cuil      String    @id @map("_id")
   nombre    String
   apellido  String
   telefono  String?
@@ -122,16 +125,17 @@ model Cliente {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
+  Venta     Venta[]
 }
 
 model Marca {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  nombre       String        @unique
-  descripcion  String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  deletedAt    DateTime?
-  lineas    MarcaXLinea[]
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String        @unique
+  descripcion String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  lineas      MarcaXLinea[]
 }
 
 model Linea {
@@ -145,12 +149,12 @@ model Linea {
 }
 
 model MarcaXLinea {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  marcaId   String   @db.ObjectId
-  lineaId   String   @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId String @db.ObjectId
+  lineaId String @db.ObjectId
 
-  marca     Marca    @relation(fields: [marcaId], references: [id], onDelete: Restrict)
-  linea     Linea    @relation(fields: [lineaId], references: [id], onDelete: Restrict)
+  marca     Marca     @relation(fields: [marcaId], references: [id], onDelete: Restrict)
+  linea     Linea     @relation(fields: [lineaId], references: [id], onDelete: Restrict)
   productos Product[]
 
   createdAt DateTime @default(now())
