@@ -13,14 +13,15 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid()) @map("_id")
   name          String
   email         String    @unique
   emailVerified Boolean   @default(false)
-  role          Role      @default(USER)
+  role          Role      @default(ADMIN)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
   sessions      Session[]
   accounts      Account[]
   ventas        Venta[]   // relación 1:N
@@ -29,24 +30,24 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(uuid()) @map("_id")
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String @id @default(uuid()) @map("_id")
   accountId             String
   providerId            String
-  userId                String    @db.ObjectId
+  userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
@@ -75,11 +76,14 @@ model Verification {
 model Venta {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   fecha        DateTime       @default(now())        // <- renombrado desde 'date'
-  usuarioId    String         @db.ObjectId
+  usuarioId    String
   usuario      User           @relation(fields: [usuarioId], references: [id])
+  cuil         String         
+  cliente      Cliente        @relation(fields: [cuil], references: [cuil], onDelete: Cascade)
   detalleVenta DetalleVenta[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
 
   @@map("venta")
 }
@@ -87,41 +91,44 @@ model Venta {
 model DetalleVenta {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   ventaId        String   @db.ObjectId
+  productoId     String   @db.ObjectId
   venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
-  producto       String                         // <- agregado
+  producto       Product  @relation(fields: [productoId], references: [id], onDelete: Cascade)
   cantidad       Int
-  precioUnitario Float                          // <- agregado (en Mongo no hay Decimal nativo en Prisma; si querés Decimal128, ver nota)
-  subtotal       Float
+  precioUnitario Float
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
 
   @@index([ventaId])
   @@map("detalle_venta")
 }
 
 model Product {
-  id            String        @id @map("_id")
-  name          String
-  description   String?
-  price         Float
-  stock         Int
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String?
+  precio      Float
+  stock       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  marcaXLineaId String?       @db.ObjectId
-  marcaXLinea   MarcaXLinea?  @relation(fields: [marcaXLineaId], references: [id])
+  marcaXLineaId String         @db.ObjectId
+  marcaXLinea   MarcaXLinea    @relation(fields: [marcaXLineaId], references: [id])
+  DetalleVenta  DetalleVenta[]
 }
 
 model Cliente {
-  cuil        String   @id @map("_id")
-  nombre      String
-  apellido    String
-  telefono    String?
-  email       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  deletedAt   DateTime?
+  cuil      String    @id @map("_id")
+  nombre    String
+  apellido  String
+  telefono  String?
+  email     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  Venta     Venta[]
 }
 
 model Marca {
@@ -131,7 +138,7 @@ model Marca {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
-  marcasLineas MarcaXLinea[]
+  lineas      MarcaXLinea[]
 }
 
 model Linea {
@@ -145,12 +152,12 @@ model Linea {
 }
 
 model MarcaXLinea {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  marcaId   String   @db.ObjectId
-  lineaId   String   @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  marcaId String @db.ObjectId
+  lineaId String @db.ObjectId
 
-  marca     Marca    @relation(fields: [marcaId], references: [id])
-  linea     Linea    @relation(fields: [lineaId], references: [id])
+  marca     Marca     @relation(fields: [marcaId], references: [id], onDelete: Restrict)
+  linea     Linea     @relation(fields: [lineaId], references: [id], onDelete: Restrict)
   productos Product[]
 
   createdAt DateTime @default(now())

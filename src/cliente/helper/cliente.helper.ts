@@ -1,8 +1,8 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
-import { UpdateClienteDto } from '../dto/update-cliente.dto';
 import { Cliente } from '@prisma/client';
+import { UpdateClienteDto } from '../dto/update-cliente.dto';
 
 export async function ensureUniqueForCreate(
   prisma: PrismaService,

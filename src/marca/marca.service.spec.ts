@@ -84,7 +84,11 @@ describe('MarcaService', () => {
   });
 
   it('should update a marca', async () => {
-    const dto: UpdateMarcaDto = { nombre: 'Marca1', descripcion: 'Desc' };
+    const dto: UpdateMarcaDto = {
+      nombre: 'Marca1',
+      descripcion: 'Desc',
+      updatedAt: new Date(),
+    };
     repository.update.mockResolvedValue(marcaMock);
     const result: MarcaDto = toMarcaDto(marcaMock);
 
@@ -104,18 +108,14 @@ describe('MarcaService', () => {
   it('should throw NotFoundException if marca not found on softDelete', async () => {
     repository.findById.mockResolvedValue(null);
 
-    await expect(service.softDelete('Marca1')).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(service.softDelete('Marca1')).rejects.toThrow(NotFoundException);
   });
 
   it('should throw BadRequestException if canDelete returns false', async () => {
     repository.findById.mockResolvedValue(marcaMock);
     (productoHelper.canDelete as jest.Mock).mockResolvedValue(false);
 
-    await expect(service.softDelete('Marca1')).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(service.softDelete('Marca1')).rejects.toThrow(BadRequestException);
     expect(repository.softDelete).not.toHaveBeenCalled();
   });
 });

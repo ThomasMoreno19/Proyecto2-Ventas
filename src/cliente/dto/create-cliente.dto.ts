@@ -25,17 +25,20 @@ export class CreateClienteDto {
   @IsNotEmpty()
   @MinLength(10)
   @MaxLength(12)
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\D/g, '') : value)) // Solo números para CUIL
   @ApiProperty({ example: '20123456789', description: 'CUIL del cliente' })
   cuil!: string;
 
   @IsEmail()
   @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @ApiProperty({ example: '2Pd5s@example.com', description: 'Email del cliente' })
   email!: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(10)
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\D/g, '') : value)) // Solo números para teléfono
   @ApiProperty({ example: '1123456789', description: 'Teléfono del cliente' })
   telefono!: string;
 }
