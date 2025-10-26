@@ -7,6 +7,11 @@ import { ProductDto } from './dto/product.dto';
 import { BadRequestException, NotFoundException, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ValidationError } from 'class-validator';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
+
+const MockAuthGuard = {
+  canActivate: jest.fn(() => true),
+};
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -49,7 +54,10 @@ describe('ProductController', () => {
           useValue: mockPrismaService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue(MockAuthGuard)
+      .compile();
 
     controller = module.get<ProductController>(ProductController);
     productService = module.get<ProductService>(ProductService);

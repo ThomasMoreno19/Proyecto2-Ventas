@@ -24,9 +24,7 @@ export async function asociarMarcas({
   const idsInvalidos = marcaIds.filter((id) => !idsValidos.includes(id));
 
   if (idsInvalidos.length > 0) {
-    throw new BadRequestException(
-      `Las siguientes marcas no existen: ${idsInvalidos.join(', ')}`,
-    );
+    throw new BadRequestException(`Las siguientes marcas no existen: ${idsInvalidos.join(', ')}`);
   }
 
   // Buscar relaciones existentes

@@ -38,9 +38,15 @@ export class VentasService {
   }
 
   async update(id: string, dto: UpdateVentaDto) {
-    await validateCliente(this.prisma, dto.cuil);
-    await validateUsuario(this.prisma, dto.usuarioId);
-    await validateProductosYStock(this.prisma, dto.detalleVenta);
+    if (dto.cuil) {
+      await validateCliente(this.prisma, dto.cuil);
+    }
+    if (dto.usuarioId) {
+      await validateUsuario(this.prisma, dto.usuarioId);
+    }
+    if (dto.detalleVenta) {
+      await validateProductosYStock(this.prisma, dto.detalleVenta);
+    }
     return this.ventasRepository.update(id, dto);
   }
 

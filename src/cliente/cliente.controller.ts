@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Delete, UsePipes, Put, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  UsePipes,
+  Put,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
@@ -8,9 +18,11 @@ import { ValidateCuilPipe } from './pipe/normalize-cuil.pipe';
 import { ValidateTelefonoPipe } from './pipe/normalize-telefono.pipe';
 import { ValidateEmailPipe } from './pipe/normalize-email.pipe';
 import { ValidateUpdateClientePipe } from './pipe/update-dto.pipe';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
 
 @ApiTags('Cliente')
 @Controller('cliente')
+@UseGuards(AuthGuard)
 export class ClienteController {
   constructor(private readonly clienteService: ClienteService) {}
 
