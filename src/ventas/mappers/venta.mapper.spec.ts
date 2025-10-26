@@ -1,8 +1,8 @@
 // src/ventas/ventas.mapper.spec.ts
 import { toVentaDto, toCreateCDetalleVentaDto } from './venta.mapper';
 import { Venta, DetalleVenta, Product, Cliente, User } from '@prisma/client';
-import { CreateVentaDto } from './dto/create-venta.dto';
-import { CreateDetalleVentaDto } from './dto/create-detalle-venta.dto';
+import { CreateVentaDto } from '../dto/create-venta.dto';
+import { CreateDetalleVentaDto } from '../dto/create-detalle-venta.dto';
 
 describe('VentasMapper', () => {
   let mockVenta: Venta & {

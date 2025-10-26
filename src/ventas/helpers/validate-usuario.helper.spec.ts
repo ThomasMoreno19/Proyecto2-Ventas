@@ -29,10 +29,6 @@ describe('validateUsuario', () => {
       image: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      deletedAt: null,
-      sessions: [],
-      accounts: [],
-      ventas: [],
     };
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUsuario);
 
@@ -45,7 +41,9 @@ describe('validateUsuario', () => {
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
     await expect(validateUsuario(prisma, '999')).rejects.toThrow(NotFoundException);
-    await expect(validateUsuario(prisma, '999')).rejects.toThrow('Usuario con ID 999 no encontrado');
+    await expect(validateUsuario(prisma, '999')).rejects.toThrow(
+      'Usuario con ID 999 no encontrado',
+    );
     expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: '999' } });
   });
 });
