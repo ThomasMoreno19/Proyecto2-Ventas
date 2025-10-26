@@ -21,11 +21,13 @@ export class UsersService {
   ) {}
 
   async register(req: ExpressRequest, dto: RegisterDto) {
+    // Solo pasamos email, password y name
     return this.authService.api.signUpEmail({
       body: {
         email: dto.email,
         password: dto.password,
         name: dto.name,
+        // NO incluir id
       },
       headers: fromNodeHeaders(req.headers),
     });
