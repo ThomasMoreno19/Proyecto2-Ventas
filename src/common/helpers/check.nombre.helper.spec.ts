@@ -15,11 +15,9 @@ describe('checkUniqueName helper', () => {
   it('debe resolver si no existe ninguna marca con ese nombre', async () => {
     (prisma.marca.findFirst as jest.Mock).mockResolvedValue(null);
 
-    await expect(
-      checkUniqueName(prisma, 'marca', 'NuevaMarca'),
-    ).resolves.toBeUndefined();
+    await expect(checkUniqueName(prisma, 'marca', 'NuevaMarca')).resolves.toBeUndefined();
 
-    expect(prisma.marca.findFirst).toHaveBeenCalledWith({
+    expect(prisma.marca.findFirst as jest.Mock).toHaveBeenCalledWith({
       where: { nombre: 'nuevamarca' },
     });
   });
@@ -30,9 +28,9 @@ describe('checkUniqueName helper', () => {
       nombre: 'marcaexistente',
     });
 
-    await expect(
-      checkUniqueName(prisma, 'marca', 'MarcaExistente'),
-    ).rejects.toThrow(BadRequestException);
+    await expect(checkUniqueName(prisma, 'marca', 'MarcaExistente')).rejects.toThrow(
+      BadRequestException,
+    );
 
     expect(prisma.marca.findFirst).toHaveBeenCalledWith({
       where: { nombre: 'marcaexistente' },
@@ -42,9 +40,7 @@ describe('checkUniqueName helper', () => {
   it('debe resolver si no existe ninguna línea con ese nombre', async () => {
     (prisma.linea.findFirst as jest.Mock).mockResolvedValue(null);
 
-    await expect(
-      checkUniqueName(prisma, 'linea', 'LineaNueva'),
-    ).resolves.toBeUndefined();
+    await expect(checkUniqueName(prisma, 'linea', 'LineaNueva')).resolves.toBeUndefined();
 
     expect(prisma.linea.findFirst).toHaveBeenCalledWith({
       where: { nombre: 'lineanueva' },
@@ -57,9 +53,9 @@ describe('checkUniqueName helper', () => {
       nombre: 'lineaexistente',
     });
 
-    await expect(
-      checkUniqueName(prisma, 'linea', 'LineaExistente'),
-    ).rejects.toThrow(BadRequestException);
+    await expect(checkUniqueName(prisma, 'linea', 'LineaExistente')).rejects.toThrow(
+      BadRequestException,
+    );
 
     expect(prisma.linea.findFirst).toHaveBeenCalledWith({
       where: { nombre: 'lineaexistente' },
