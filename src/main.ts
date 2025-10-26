@@ -9,10 +9,10 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    origin: ['*'],
     credentials: true, // si usás cookies/sesión
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['*'],
   });
 
   const config = new DocumentBuilder()
