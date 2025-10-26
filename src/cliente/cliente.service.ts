@@ -40,7 +40,6 @@ export class ClienteService {
   }
 
   async update(dto: UpdateClienteDto): Promise<CreateClienteDto> {
-    dto.updatedAt = new Date();
     await ensureUniqueForUpdate(this.prisma, dto);
 
     const cliente = await this.clienteRepository.update(dto);

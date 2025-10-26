@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClienteController } from '../cliente.controller';
-import { ClienteService } from '../cliente.service';
-import { CreateClienteDto } from '../dto/create-cliente.dto';
-import { UpdateClienteDto } from '../dto/update-cliente.dto';
+import { ClienteController } from './cliente.controller';
+import { ClienteService } from './cliente.service';
+import { CreateClienteDto } from './dto/create-cliente.dto';
+import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
+
+const MockAuthGuard = {
+  canActivate: jest.fn(() => true),
+};
 
 describe('ClienteController', () => {
   let controller: ClienteController;
@@ -26,7 +31,10 @@ describe('ClienteController', () => {
           useValue: mockClienteService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue(MockAuthGuard)
+      .compile();
 
     controller = module.get<ClienteController>(ClienteController);
     service = module.get<ClienteService>(ClienteService);
@@ -36,7 +44,6 @@ describe('ClienteController', () => {
     jest.clearAllMocks();
   });
 
-  // --- CREATE ---
   describe('create', () => {
     it('debería crear un cliente correctamente', async () => {
       const dto: CreateClienteDto = {
@@ -56,7 +63,6 @@ describe('ClienteController', () => {
     });
   });
 
-  // --- FIND ALL ---
   describe('findAll', () => {
     it('debería retornar todos los clientes', async () => {
       const mockClientes = [
@@ -84,7 +90,6 @@ describe('ClienteController', () => {
     });
   });
 
-  // --- FIND ONE ---
   describe('findOne', () => {
     it('debería retornar un cliente por su CUIL', async () => {
       const cuil = '20345678901';
@@ -98,7 +103,6 @@ describe('ClienteController', () => {
     });
   });
 
-  // --- UPDATE ---
   describe('update', () => {
     it('debería actualizar un cliente', async () => {
       const dto: UpdateClienteDto = {
@@ -107,13 +111,12 @@ describe('ClienteController', () => {
         apellido: 'Gómez',
         email: 'carlos@test.com',
         telefono: '+5491144455566',
-        updatedAt: new Date(),
       };
 
       const updated = { ...dto };
       mockClienteService.update.mockResolvedValue(updated);
 
-      const result = await controller.update(dto.cuil, dto);
+      const result = await controller.update(dto.cuil!, dto);
 
       expect(service.update).toHaveBeenCalledWith(dto);
       expect(result).toEqual(updated);

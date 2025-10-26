@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  UsePipes,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -7,10 +17,8 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ValidateProductPipe } from './pipes/validate-product.pipe';
 import { ValidateProductUpdatePipe } from './pipes/validate-productUpdate.pipe';
 import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
-
-//import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
-//import { Role } from '@prisma/client';
-
+import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
+import { Role } from '@prisma/client';
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -19,8 +27,8 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto creado exitosamente',
   })
-  //@UseGuards(AuthGuard)
-  //@Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
   @Post()
   @UsePipes(ValidateProductPipe, NormalizePipe)
   create(@Body() createProductDto: CreateProductDto) {
@@ -32,8 +40,8 @@ export class ProductController {
     isArray: true,
     description: 'Productos obtenidos exitosamente',
   })
-  //@UseGuards(AuthGuard)
-  //@Roles([Role.ADMIN, Role.USER])
+  @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN, Role.USER])
   @Get()
   findAll() {
     return this.productService.findAll();
@@ -43,8 +51,8 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto obtenido exitosamente',
   })
-  //@UseGuards(AuthGuard)
-  //@Roles([Role.ADMIN, Role.USER])
+  @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN, Role.USER])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
@@ -54,8 +62,8 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto actualizado exitosamente',
   })
-  //@UseGuards(AuthGuard)
-  //@Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
   @Put(':id')
   @UsePipes(NormalizePipe)
   update(
@@ -67,8 +75,8 @@ export class ProductController {
   @ApiOkResponse({
     description: 'Producto eliminado exitosamente',
   })
-  //@UseGuards(AuthGuard)
-  //@Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
   @Delete(':id')
   softDelete(@Param('id') id: string) {
     return this.productService.softDelete(id);
