@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { LineaRepository } from './repositories/linea.repository';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
@@ -47,8 +43,7 @@ export class LineaService {
 
   async update(nombre: string, dto: UpdateLineaDto) {
     const linea = await this.prisma.linea.findUnique({ where: { nombre } });
-    if (!linea)
-      throw new NotFoundException(`No se encontró la línea '${nombre}'.`);
+    if (!linea) throw new NotFoundException(`No se encontró la línea '${nombre}'.`);
 
     const updatedLinea = await this.lineaRepository.update(nombre, dto);
 

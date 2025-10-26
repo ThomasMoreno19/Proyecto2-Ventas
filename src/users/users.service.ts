@@ -10,6 +10,7 @@ import { SendEmailOtpDto } from './dto/send-email-otp.dto';
 import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import type { UsersRepository } from './repository/users.interface.repository';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,16 @@ export class UsersService {
         password: dto.password,
         name: dto.name,
         // NO incluir id
+      },
+      headers: fromNodeHeaders(req.headers),
+    });
+  }
+
+  async login(req: ExpressRequest, dto: LoginDto) {
+    return this.authService.api.signInEmail({
+      body: {
+        email: dto.email,
+        password: dto.password,
       },
       headers: fromNodeHeaders(req.headers),
     });

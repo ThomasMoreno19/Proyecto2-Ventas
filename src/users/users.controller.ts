@@ -6,6 +6,7 @@ import { CheckEmailDto } from './dto/check-email.dto';
 import { SendEmailOtpDto } from './dto/send-email-otp.dto';
 import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('users')
 export class UsersController {
@@ -39,5 +40,10 @@ export class UsersController {
   @Post('password/reset/confirm')
   confirmPasswordReset(@Request() req: ExpressRequest, @Body() dto: ResetPasswordDto) {
     return this.usersService.confirmPasswordReset(req, dto);
+  }
+
+  @Post('login')
+  login(@Request() req: ExpressRequest, @Body() dto: LoginDto) {
+    return this.usersService.login(req, dto);
   }
 }

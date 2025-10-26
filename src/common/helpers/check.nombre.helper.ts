@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 export async function checkUniqueName(
   prisma: PrismaService,
-  model: 'marca' | 'linea',
+  model: 'marca' | 'linea' | 'product',
   nombre: string,
 ) {
   const cleanName = nombre.trim().toLowerCase();
