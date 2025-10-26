@@ -83,4 +83,28 @@ export class MarcaRepository implements IMarcaRepository {
       data: { deletedAt: new Date() },
     });
   }
+
+  // Buscar una marca por nombre, sin importar si está eliminada o no
+  async findMarca(nombre: string): Promise<Marca | null> {
+    const marca = await this.prisma.marca.findFirst({
+      where: { nombre },
+    });
+
+    if (!marca) {
+      return null;
+    }
+
+    return marca;
+  }
+
+  // Reactivar una marca eliminada por nombre
+  async reactivate(marca: Marca, dto: CreateMarcaDto): Promise<Marca> {
+    return this.prisma.marca.update({
+      where: { nombre: marca.nombre },
+      data: {
+        deletedAt: null,
+        descripcion: dto.descripcion,
+      },
+    });
+  }
 }

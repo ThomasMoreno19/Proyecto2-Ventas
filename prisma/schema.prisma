@@ -79,7 +79,7 @@ model Venta {
   usuarioId    String
   usuario      User           @relation(fields: [usuarioId], references: [id])
   cuil         String         
-  cliente      Cliente        @relation(fields: [cuil], references: [cuil], onDelete: Cascade)
+  cliente      Cliente        @relation(fields: [cuil], references: [cuil], onDelete: Restrict)
   detalleVenta DetalleVenta[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -92,8 +92,8 @@ model DetalleVenta {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   ventaId        String   @db.ObjectId
   productoId     String   @db.ObjectId
-  venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
-  producto       Product  @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  venta          Venta    @relation(fields: [ventaId], references: [id], onDelete: Restrict)
+  producto       Product  @relation(fields: [productoId], references: [id], onDelete: Restrict)
   cantidad       Int
   precioUnitario Float
   createdAt      DateTime @default(now())
