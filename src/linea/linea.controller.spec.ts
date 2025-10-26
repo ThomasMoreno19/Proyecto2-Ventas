@@ -5,6 +5,11 @@ import { LineaService } from './linea.service';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
 import { LineaDto } from './dto/linea.dto';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
+
+const MockAuthGuard = {
+  canActivate: jest.fn(() => true),
+};
 
 describe('LineaController', () => {
   let controller: LineaController;
@@ -27,7 +32,10 @@ describe('LineaController', () => {
           useValue: mockLineaService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue(MockAuthGuard)
+      .compile();
 
     controller = module.get<LineaController>(LineaController);
     service = module.get<LineaService>(LineaService);
