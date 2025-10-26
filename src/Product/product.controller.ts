@@ -68,6 +68,7 @@ export class ProductController {
   ) {
     return this.productService.update(id, updateProductDto);
   }
+
   @ApiOkResponse({
     description: 'Producto eliminado exitosamente',
   })

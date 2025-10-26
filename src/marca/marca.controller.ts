@@ -45,9 +45,8 @@ export class MarcaController {
 
   @ApiOkResponse({ type: MarcaDto })
   @Put(':nombre')
-  @UsePipes(NormalizePipe)
   @Roles([Role.ADMIN])
-  update(@Param('nombre') nombre: string, @Body() updateMarcaDto: UpdateMarcaDto) {
+  update(@Param('nombre') nombre: string, @Body(NormalizePipe) updateMarcaDto: UpdateMarcaDto) {
     return this.marcaService.update(nombre, updateMarcaDto);
   }
 

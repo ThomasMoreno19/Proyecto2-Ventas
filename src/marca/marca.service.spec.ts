@@ -8,7 +8,7 @@ import { MarcaDto } from './dto/marca.dto';
 import { toMarcaDto } from './mappers/marca.mapper';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import * as checkHelper from '../common/helpers/check.nombre.helper';
-import * as productoHelper from './helpers/check.producto';
+import * as productoHelper from './helpers/marca.helper';
 
 describe('MarcaService', () => {
   let service: MarcaService;

@@ -19,4 +19,11 @@ export class MarcaDto {
     required: false,
   })
   descripcion?: string;
+
+  @ApiProperty({
+    example: '2023-11-01T10:00:00.000Z',
+    description: 'Fecha de eliminación de la marca (soft delete)',
+    required: false,
+  })
+  deletedAt?: Date | null;
 }
