@@ -130,9 +130,6 @@ export class PrismaVentaRepository implements VentaRepository {
           // Usamos connect para las relaciones, pero actualizando el ID
           usuario: data.usuarioId ? { connect: { id: data.usuarioId } } : undefined,
           cliente: data.cuil ? { connect: { cuil: data.cuil } } : undefined,
-          // Si tu modelo permite actualizar el campo 'usuarioId'/'cuil' directamente,
-          // puedes mantener: usuarioId: data.usuarioId ?? undefined, cuil: data.cuil ?? undefined
-          // pero usar connect es más seguro para relaciones.
         },
       });
 

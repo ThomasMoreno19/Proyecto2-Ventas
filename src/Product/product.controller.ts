@@ -19,6 +19,8 @@ import { ValidateProductUpdatePipe } from './pipes/validate-productUpdate.pipe';
 import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
 import { Role } from '@prisma/client';
+
+@UseGuards(AuthGuard)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -27,7 +29,6 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto creado exitosamente',
   })
-  @UseGuards(AuthGuard)
   @Roles([Role.ADMIN])
   @Post()
   @UsePipes(ValidateProductPipe, NormalizePipe)
@@ -40,8 +41,6 @@ export class ProductController {
     isArray: true,
     description: 'Productos obtenidos exitosamente',
   })
-  @UseGuards(AuthGuard)
-  @Roles([Role.ADMIN, Role.USER])
   @Get()
   findAll() {
     return this.productService.findAll();
@@ -51,8 +50,6 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto obtenido exitosamente',
   })
-  @UseGuards(AuthGuard)
-  @Roles([Role.ADMIN, Role.USER])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
@@ -62,7 +59,6 @@ export class ProductController {
     type: ProductDto,
     description: 'Producto actualizado exitosamente',
   })
-  @UseGuards(AuthGuard)
   @Roles([Role.ADMIN])
   @Put(':id')
   @UsePipes(NormalizePipe)
@@ -75,7 +71,6 @@ export class ProductController {
   @ApiOkResponse({
     description: 'Producto eliminado exitosamente',
   })
-  @UseGuards(AuthGuard)
   @Roles([Role.ADMIN])
   @Delete(':id')
   softDelete(@Param('id') id: string) {

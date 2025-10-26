@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { VentasService } from './ventas.service';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 import { Type } from 'class-transformer';
+import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
+import { Role } from '@prisma/client';
 
 class FindAllQuery {
   @Type(() => Number)
@@ -20,6 +22,7 @@ class FindAllQuery {
   to?: Date;
 }
 
+@UseGuards(AuthGuard)
 @Controller('ventas')
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
@@ -29,6 +32,7 @@ export class VentasController {
     return this.ventasService.create(dto);
   }
 
+  @Roles([Role.ADMIN])
   @Get()
   findAll(@Query() q: FindAllQuery) {
     return this.ventasService.findAll(q);
