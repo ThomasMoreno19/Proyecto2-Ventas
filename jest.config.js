@@ -15,4 +15,6 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/(?!(jose|@thallesp/nestjs-better-auth|@noble/ciphers|@noble/hashes)/.*)',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
 };
