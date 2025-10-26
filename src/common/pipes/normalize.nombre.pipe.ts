@@ -5,15 +5,11 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 export class NormalizePipe implements PipeTransform {
   transform(value: unknown) {
     if (value == null) {
-      throw new BadRequestException(
-        'El cuerpo de la petición no puede ser nulo',
-      );
+      throw new BadRequestException('El cuerpo de la petición no puede ser nulo');
     }
 
     if (typeof value !== 'object') {
-      throw new BadRequestException(
-        'El cuerpo de la petición debe ser un objeto',
-      );
+      throw new BadRequestException('El cuerpo de la petición debe ser un objeto');
     }
 
     const obj = value as Record<string, unknown>;

@@ -18,8 +18,6 @@ export async function checkUniqueName(
         });
 
   if (exists) {
-    throw new BadRequestException(
-      `Ya existe una ${model} con el nombre "${nombre}"`,
-    );
+    throw new BadRequestException(`Ya existe una ${model} con el nombre "${nombre}"`);
   }
 }
