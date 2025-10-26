@@ -5,6 +5,11 @@ import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { MarcaDto } from './dto/marca.dto';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
+
+const MockAuthGuard = {
+  canActivate: jest.fn(() => true),
+};
 
 describe('MarcaController', () => {
   let controller: MarcaController;
@@ -27,7 +32,10 @@ describe('MarcaController', () => {
           useValue: mockMarcaService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue(MockAuthGuard)
+      .compile();
 
     controller = module.get<MarcaController>(MarcaController);
     service = module.get<MarcaService>(MarcaService);
@@ -92,6 +100,7 @@ describe('MarcaController', () => {
       const dto: UpdateMarcaDto = {
         nombre: 'Marca1',
         descripcion: 'Nueva Desc',
+        updatedAt: new Date(),
       };
       const result: MarcaDto = {
         id: '1',
