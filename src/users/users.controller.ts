@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Request, Get } from '@nestjs/common';
-import type { Request as ExpressRequest } from 'express';
+import { Controller, Post, Body, Request, Get, Res } from '@nestjs/common';
+import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import { UsersService } from './users.service';
 import { RegisterDto } from './dto/register.dto';
 import { CheckEmailDto } from './dto/check-email.dto';
@@ -11,7 +11,7 @@ import { Session, UserSession } from '@thallesp/nestjs-better-auth';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post('register')
   register(@Request() req: ExpressRequest, @Body() dto: RegisterDto) {
@@ -24,11 +24,22 @@ export class UsersController {
   }
 
   @Post('signin')
-  async signIn(@Request() req: ExpressRequest, @Body() dto: SignInDto) {
+  async signIn(
+    @Request() req: ExpressRequest,
+    @Body() dto: SignInDto,
+    @Res() res: ExpressResponse,
+  ) {
     const result = await this.usersService.login(req, dto);
 
-    return result;
+    const cookie = result.headers.get('set-cookie');
+
+    if (cookie) {
+      res.setHeader('Set-Cookie', cookie);
+    }
+
+    return res.json(result.response);
   }
+
 
   @Post('email-exists')
   emailExists(@Body() dto: CheckEmailDto) {
