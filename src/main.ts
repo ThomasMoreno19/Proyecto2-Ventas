@@ -9,10 +9,20 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['*'],
+    origin: true, // Allow all origins
     credentials: true, // si usás cookies/sesión
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['*'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Access-Control-Allow-Headers',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers',
+    ],
+    exposedHeaders: ['Authorization'],
   });
 
   const config = new DocumentBuilder()
