@@ -9,8 +9,8 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: true, // Allow all origins
-    credentials: true, // Allow cookies/session
+    origin: ['http://localhost:5173'], // or whatever you use locally
+    credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
     allowedHeaders: [
       'Content-Type',
@@ -20,7 +20,7 @@ async function bootstrap() {
       'Origin',
     ],
     exposedHeaders: ['Authorization', 'Set-Cookie'],
-  });
+  })
 
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
