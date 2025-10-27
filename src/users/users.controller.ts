@@ -39,7 +39,7 @@ export class UsersController {
 
     res.cookie('better-auth.session_token', result.headers.get('set-cookie'), {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
