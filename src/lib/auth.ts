@@ -5,9 +5,6 @@ import prisma from './db';
 
 export const auth = betterAuth({
   trustedOrigins: ['*'],
-  advanced: {
-    useSecureCookies: process.env.NODE_ENV === 'production',
-  },
   database: prismaAdapter(prisma, {
     provider: 'mongodb',
   }),

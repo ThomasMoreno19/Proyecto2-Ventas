@@ -18,30 +18,10 @@ export class UsersController {
   }
 
   @Post('signin')
-  async signIn(
-    @Request() req: ExpressRequest,
-    @Res() res: ExpressResponse,
-    @Body() dto: SignInDto,
-  ) {
+  async signIn(@Request() req: ExpressRequest, @Body() dto: SignInDto) {
     const result = await this.usersService.login(req, dto);
 
-    // Better Auth API methods return a token in the response body
-    // We need to manually set it as a cookie
-    const { token, ...userData } = result as any;
-
-    // Set the token as an HTTP-only cookie
-    if (token) {
-      const isProduction = process.env.NODE_ENV === 'production';
-      res.cookie('better-auth.session_token', token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
-    }
-
-    return res.status(201).json(userData || result);
+    return result;
   }
 
   @Post('email-exists')
