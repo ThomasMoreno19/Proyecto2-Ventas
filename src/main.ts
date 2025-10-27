@@ -2,31 +2,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
   });
 
-  // Enable cookie parser middleware
-  app.use(cookieParser());
-
   app.enableCors({
-    origin: true, // Allow all origins
+    origin: ['*'], // Allow all origins
     credentials: true, // si usás cookies/sesión
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-      'Access-Control-Allow-Headers',
-      'Access-Control-Request-Method',
-      'Access-Control-Request-Headers',
-    ],
-    exposedHeaders: ['Authorization'],
+    allowedHeaders: ['*'],
   });
 
   const config = new DocumentBuilder()

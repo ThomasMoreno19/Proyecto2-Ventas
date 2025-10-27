@@ -4,7 +4,6 @@ import { emailOTP } from 'better-auth/plugins';
 import prisma from './db';
 
 export const auth = betterAuth({
-  trustedOrigins: ['*'],
   database: prismaAdapter(prisma, {
     provider: 'mongodb',
   }),
