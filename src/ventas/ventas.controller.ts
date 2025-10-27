@@ -32,8 +32,8 @@ export class VentasController {
   }
 
   @Get()
-  findAll(@Query() q: FindAllQuery, @Session() session: UserSession) {
-    return this.ventasService.findAll(session, q);
+  findAll(@Query() q: FindAllQuery, @Session() session: UserSession, to?: Date, from?: Date) {
+    return this.ventasService.findAll(session, to, from, q);
   }
 
   @Get(':id')

@@ -30,12 +30,14 @@ export class VentasService {
 
   findAll(
     session: UserSession,
+    to?: Date,
+    from?: Date,
     query?: { skip?: number; take?: number; usuarioId?: string; from?: Date; to?: Date },
   ) {
     if (session.user.role !== 'ADMIN') {
-      return this.ventasRepository.findAll(query);
+      return this.ventasRepository.findAll(query, to, from);
     } else {
-      return this.ventasRepository.findByUser(session.user.id);
+      return this.ventasRepository.findByUser(session.user.id, to, from);
     }
   }
 

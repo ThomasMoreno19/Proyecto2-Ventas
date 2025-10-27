@@ -100,10 +100,10 @@ export class PrismaVentaRepository implements VentaRepository {
     return { items: rows as VentaWithAllRelations[], total: count };
   }
 
-  async findByUser(usuarioId: string): Promise<VentaWithAllRelations[]> {
+  async findByUser(usuarioId: string, to?: Date, from?: Date): Promise<VentaWithAllRelations[]> {
     // 🚨 Tipo de retorno actualizado
     const ventas = await this.prisma.venta.findMany({
-      where: { usuarioId },
+      where: { usuarioId, fecha: { gte: from, lte: to } },
       // 🚨 Incluir TODAS las relaciones
       include: {
         cliente: true,
