@@ -6,6 +6,7 @@ import { CheckEmailDto } from './dto/check-email.dto';
 import { SendEmailOtpDto } from './dto/send-email-otp.dto';
 import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SignInDto } from './dto/create-auth.dto';
 
 @Controller('users')
 export class UsersController {
@@ -14,6 +15,11 @@ export class UsersController {
   @Post('register')
   register(@Request() req: ExpressRequest, @Body() dto: RegisterDto) {
     return this.usersService.register(req, dto);
+  }
+
+  @Post('signin')
+  signIn(@Request() req: ExpressRequest, @Body() dto: SignInDto) {
+    return this.usersService.login(req, dto);
   }
 
   @Post('email-exists')
