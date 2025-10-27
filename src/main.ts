@@ -12,7 +12,14 @@ async function bootstrap() {
     origin: true, // Allow all origins
     credentials: true, // Allow cookies/session
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
-    allowedHeaders: ['*'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+      'Origin',
+    ],
+    exposedHeaders: ['Authorization', 'Set-Cookie'],
   });
 
   const config = new DocumentBuilder()
