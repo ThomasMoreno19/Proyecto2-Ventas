@@ -29,25 +29,17 @@ export class UsersController {
     @Body() dto: SignInDto,
     @Res() res: ExpressResponse,
   ) {
-    const result = await this.usersService.login(req, dto);
+    const result = await this.usersService.login(req, dto)
 
-    const cookie = result.headers.get('set-cookie');
-    result.headers.delete('set-cookie');
+    const cookie = result.headers.get('set-cookie')
 
     if (cookie) {
-      res.setHeader('Set-Cookie', cookie);
+      // Pass the cookie as-is, don't use res.cookie again
+      res.setHeader('Set-Cookie', cookie)
     }
 
-    res.cookie('better-auth.session_token', cookie, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    });
-    return res.json(result.response);
+    return res.json(result.response)
   }
-
 
   @Post('email-exists')
   emailExists(@Body() dto: CheckEmailDto) {
