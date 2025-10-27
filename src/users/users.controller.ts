@@ -32,12 +32,13 @@ export class UsersController {
     const result = await this.usersService.login(req, dto);
 
     const cookie = result.headers.get('set-cookie');
+    result.headers.delete('set-cookie');
 
     if (cookie) {
       res.setHeader('Set-Cookie', cookie);
     }
 
-    res.cookie('better-auth.session_token', result.headers.get('set-cookie'), {
+    res.cookie('better-auth.session_token', cookie, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
