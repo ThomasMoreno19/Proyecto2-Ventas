@@ -9,8 +9,8 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['*'], // Allow all origins
-    credentials: true, // si usás cookies/sesión
+    origin: true, // Allow all origins
+    credentials: true, // Allow cookies/session
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
     allowedHeaders: ['*'],
   });
