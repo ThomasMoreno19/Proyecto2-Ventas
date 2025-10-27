@@ -27,8 +27,8 @@ export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
   @Post()
-  create(@Body() dto: CreateVentaDto) {
-    return this.ventasService.create(dto);
+  create(@Body() dto: CreateVentaDto, @Session() session: UserSession) {
+    return this.ventasService.create(dto, session);
   }
 
   @Get()
@@ -42,8 +42,8 @@ export class VentasController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateVentaDto) {
-    return this.ventasService.update(id, dto);
+  update(@Param('id') id: string, @Body() dto: UpdateVentaDto, @Session() session: UserSession) {
+    return this.ventasService.update(id, dto, session);
   }
 
   @Delete(':id')

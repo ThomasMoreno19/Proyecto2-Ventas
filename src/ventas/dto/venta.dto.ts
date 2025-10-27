@@ -11,14 +11,26 @@ import {
 } from 'class-validator';
 import { CreateDetalleVentaDto } from './create-detalle-venta.dto';
 
-export class CreateVentaDto {
+export class VentaDto {
   @IsDate()
   @Type(() => Date)
   @ApiProperty({
     example: '2025-10-25T14:30:00.000Z',
     description: 'Fecha de la venta en formato ISO',
   })
-  fecha?: Date;
+  fecha!: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Matches(/^[0-9a-fA-F]{24}$/, {
+    message: 'El usuarioId debe ser un ObjectId válido de MongoDB (24 caracteres hexadecimales)',
+  })
+  @ApiProperty({
+    example: '507f1f77bcf86cd799439011',
+    description: 'ID del usuario que realiza la venta (ObjectId de MongoDB)',
+  })
+  usuarioId!: string;
 
   @IsString()
   @IsNotEmpty()

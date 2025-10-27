@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Request, Res } from '@nestjs/common';
+import { Controller, Post, Body, Request, Res, Get } from '@nestjs/common';
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import { UsersService } from './users.service';
 import { RegisterDto } from './dto/register.dto';
@@ -7,6 +7,7 @@ import { SendEmailOtpDto } from './dto/send-email-otp.dto';
 import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/create-auth.dto';
+import { Session, UserSession } from '@thallesp/nestjs-better-auth';
 
 @Controller('users')
 export class UsersController {
@@ -15,6 +16,11 @@ export class UsersController {
   @Post('register')
   register(@Request() req: ExpressRequest, @Body() dto: RegisterDto) {
     return this.usersService.register(req, dto);
+  }
+
+  @Get('session')
+  getSession(@Session() session: UserSession) {
+    return session;
   }
 
   @Post('signin')

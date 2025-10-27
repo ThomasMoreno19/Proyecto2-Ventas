@@ -6,7 +6,10 @@ import { CreateVentaDto } from './dto/create-venta.dto';
 import { toVentaDto } from './mappers/venta.mapper';
 import { validateCliente } from './helpers/validate-cliente.helper';
 import { validateUsuario } from './helpers/validate-usuario.helper';
-import { validateProductosYStock } from './helpers/validate-productos.helper';
+import {
+  validateProductosYStock,
+  actualizarStockProductos,
+} from './helpers/validate-productos.helper';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 
 @Injectable()
@@ -16,14 +19,20 @@ export class VentasService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async create(dto: CreateVentaDto) {
+  async create(dto: CreateVentaDto, session: UserSession) {
+    console.log('Creating venta with DTO:', dto);
     // Validaciones
     await validateCliente(this.prisma, dto.cuil);
-    await validateUsuario(this.prisma, dto.usuarioId);
+    console.log('Cliente validado');
+    await validateUsuario(this.prisma, session.user.id);
+    console.log('Usuario validado');
     await validateProductosYStock(this.prisma, dto.detalleVenta);
+    console.log('Productos y stock validados');
+    await actualizarStockProductos(this.prisma, dto.detalleVenta);
+    console.log('Stock de productos actualizado');
 
     // Llama al repositorio con solo el DTO
-    const venta = await this.ventasRepository.create(dto);
+    const venta = await this.ventasRepository.create(dto, session);
 
     return toVentaDto(venta);
   }
@@ -47,17 +56,17 @@ export class VentasService {
     return venta;
   }
 
-  async update(id: string, dto: UpdateVentaDto) {
+  async update(id: string, dto: UpdateVentaDto, session: UserSession) {
     if (dto.cuil) {
       await validateCliente(this.prisma, dto.cuil);
     }
-    if (dto.usuarioId) {
-      await validateUsuario(this.prisma, dto.usuarioId);
+    if (session.user.id) {
+      await validateUsuario(this.prisma, session.user.id);
     }
     if (dto.detalleVenta) {
       await validateProductosYStock(this.prisma, dto.detalleVenta);
     }
-    return this.ventasRepository.update(id, dto);
+    return this.ventasRepository.update(id, dto, session);
   }
 
   remove(id: string) {

@@ -1,15 +1,14 @@
-import { Venta, DetalleVenta, Product, Cliente, User } from '@prisma/client';
-import { CreateVentaDto } from '../dto/create-venta.dto';
+import { Venta, DetalleVenta, Product, Cliente } from '@prisma/client';
+import { VentaDto } from '../dto/venta.dto';
 import { CreateDetalleVentaDto } from '../dto/create-detalle-venta.dto';
 
 export function toVentaDto(
   venta: Venta & {
     cliente: Cliente;
-    usuario: User;
     detalleVenta: (DetalleVenta & { producto: Product })[];
   },
-): CreateVentaDto {
-  const dto: CreateVentaDto = {
+): VentaDto {
+  const dto: VentaDto = {
     fecha: venta.fecha || new Date(),
     cuil: venta.cuil,
     usuarioId: venta.usuarioId,

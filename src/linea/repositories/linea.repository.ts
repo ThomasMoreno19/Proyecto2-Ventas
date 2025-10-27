@@ -27,6 +27,24 @@ export class LineaRepository implements ILineaRepository {
     return linea;
   }
 
+  async findMarcasByLinea(nombre: string): Promise<
+    | (Linea & {
+        marcasLineas: { marca: { id: string; nombre: string; descripcion: string | null } }[];
+      })
+    | null
+  > {
+    return this.prisma.linea.findUnique({
+      where: { nombre },
+      include: {
+        marcasLineas: {
+          include: {
+            marca: true, // trae los datos de la marca
+          },
+        },
+      },
+    });
+  }
+
   // Crea una nueva línea
   async create(data: CreateLineaDto): Promise<Linea> {
     return this.prisma.linea.create({

@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import type { VentaRepository } from './venta.interface.repository';
+import { UserSession } from '@thallesp/nestjs-better-auth';
 
 export type VentaWithAllRelations = Prisma.VentaGetPayload<{
   include: {
@@ -21,7 +22,8 @@ export type VentaWithAllRelations = Prisma.VentaGetPayload<{
 export class PrismaVentaRepository implements VentaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateVentaDto): Promise<VentaWithAllRelations> {
+  async create(data: CreateVentaDto, session: UserSession): Promise<VentaWithAllRelations> {
+    console.log('Creating venta in repository with data:', data);
     const detalleCreateInput: Prisma.DetalleVentaCreateWithoutVentaInput[] = data.detalleVenta.map(
       (d) => ({
         cantidad: d.cantidad,
@@ -35,7 +37,7 @@ export class PrismaVentaRepository implements VentaRepository {
     // Usa VentaCreateInput (con relaciones)
     const ventaCreateInput: Prisma.VentaCreateInput = {
       fecha: data.fecha,
-      usuario: { connect: { id: data.usuarioId } }, // relación
+      usuario: { connect: { id: session.user.id } }, // relación
       cliente: { connect: { cuil: data.cuil } }, // relación
       detalleVenta: { create: detalleCreateInput },
     };
@@ -132,7 +134,11 @@ export class PrismaVentaRepository implements VentaRepository {
     return venta as VentaWithAllRelations | null;
   }
 
-  async update(id: string, data: UpdateVentaDto): Promise<VentaWithAllRelations> {
+  async update(
+    id: string,
+    data: UpdateVentaDto,
+    session: UserSession,
+  ): Promise<VentaWithAllRelations> {
     // 🚨 Tipo de retorno actualizado
     const exists = await this.prisma.venta.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Venta no encontrada');
@@ -144,7 +150,7 @@ export class PrismaVentaRepository implements VentaRepository {
         data: {
           fecha: data.fecha ?? undefined,
           // Usamos connect para las relaciones, pero actualizando el ID
-          usuario: data.usuarioId ? { connect: { id: data.usuarioId } } : undefined,
+          usuario: session.user.id ? { connect: { id: session.user.id } } : undefined,
           cliente: data.cuil ? { connect: { cuil: data.cuil } } : undefined,
         },
       });

@@ -29,6 +29,16 @@ export class LineaService {
     return toLineaDto(linea);
   }
 
+  async getMarcasPorLinea(nombre: string) {
+    const linea = await this.lineaRepository.findMarcasByLinea(nombre);
+
+    if (!linea) {
+      throw new NotFoundException(`No existe la línea ${nombre}`);
+    }
+
+    return linea.marcasLineas.map((ml) => ml.marca);
+  }
+
   async create(dto: CreateLineaDto): Promise<LineaDto> {
     await checkUniqueName(this.prisma, 'linea', dto.nombre);
     const linea = await this.lineaRepository.create(dto);
