@@ -10,7 +10,7 @@ export function toVentaDto(
   },
 ): CreateVentaDto {
   const dto: CreateVentaDto = {
-    fecha: venta.fecha,
+    fecha: venta.fecha || new Date(),
     cuil: venta.cuil,
     usuarioId: venta.usuarioId,
     detalleVenta: venta.detalleVenta.map(toCreateCDetalleVentaDto),
