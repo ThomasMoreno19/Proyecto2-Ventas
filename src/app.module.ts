@@ -26,6 +26,7 @@ import { ProductModule } from './product/product.module';
     PrismaModule,
     LineaModule,
     ProductModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
