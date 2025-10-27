@@ -175,8 +175,14 @@ export class PrismaVentaRepository implements VentaRepository {
     // Asumimos que onDelete: Cascade en el esquema maneja detalleVenta,
     // si no, la transacción explícita es correcta.
     await this.prisma.$transaction([
-      this.prisma.detalleVenta.deleteMany({ where: { ventaId: id } }),
-      this.prisma.venta.delete({ where: { id } }),
+      this.prisma.detalleVenta.updateMany({
+        where: { ventaId: id },
+        data: { deletedAt: new Date() },
+      }),
+      this.prisma.venta.update({
+        where: { id: id },
+        data: { deletedAt: new Date() },
+      }),
     ]);
 
     return { ok: true };

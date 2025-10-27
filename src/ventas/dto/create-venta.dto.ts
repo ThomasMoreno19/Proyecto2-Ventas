@@ -18,7 +18,7 @@ export class CreateVentaDto {
     example: '2025-10-25T14:30:00.000Z',
     description: 'Fecha de la venta en formato ISO',
   })
-  fecha!: Date;
+  fecha?: Date;
 
   @IsString()
   @IsNotEmpty()

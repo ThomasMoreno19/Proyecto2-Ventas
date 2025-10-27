@@ -61,10 +61,9 @@ export class ProductController {
   })
   @Roles([Role.ADMIN])
   @Put(':id')
-  @UsePipes(NormalizePipe)
   update(
     @Param('id') id: string,
-    @Body(ValidateProductUpdatePipe) updateProductDto: UpdateProductDto,
+    @Body(ValidateProductUpdatePipe, NormalizePipe) updateProductDto: UpdateProductDto,
   ) {
     return this.productService.update(id, updateProductDto);
   }
