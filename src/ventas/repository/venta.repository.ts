@@ -100,6 +100,22 @@ export class PrismaVentaRepository implements VentaRepository {
     return { items: rows as VentaWithAllRelations[], total: count };
   }
 
+  async findByUser(usuarioId: string): Promise<VentaWithAllRelations[]> {
+    // 🚨 Tipo de retorno actualizado
+    const ventas = await this.prisma.venta.findMany({
+      where: { usuarioId },
+      // 🚨 Incluir TODAS las relaciones
+      include: {
+        cliente: true,
+        usuario: true,
+        detalleVenta: {
+          include: { producto: true },
+        },
+      },
+    });
+    return ventas as VentaWithAllRelations[];
+  }
+
   async findOne(id: string): Promise<VentaWithAllRelations | null> {
     // 🚨 Tipo de retorno actualizado
     const venta = await this.prisma.venta.findUnique({

@@ -15,4 +15,5 @@ export interface VentaRepository {
   findOne(id: string): Promise<VentaWithAllRelations | null>;
   update(id: string, data: UpdateVentaDto): Promise<VentaWithAllRelations>;
   remove(id: string): Promise<{ ok: true }>;
+  findByUser(usuarioId: string): Promise<VentaWithAllRelations[]>;
 }

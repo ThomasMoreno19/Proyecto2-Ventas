@@ -7,6 +7,7 @@ import { toVentaDto } from './mappers/venta.mapper';
 import { validateCliente } from './helpers/validate-cliente.helper';
 import { validateUsuario } from './helpers/validate-usuario.helper';
 import { validateProductosYStock } from './helpers/validate-productos.helper';
+import { UserSession } from '@thallesp/nestjs-better-auth';
 
 @Injectable()
 export class VentasService {
@@ -27,8 +28,15 @@ export class VentasService {
     return toVentaDto(venta);
   }
 
-  findAll(query?: { skip?: number; take?: number; usuarioId?: string; from?: Date; to?: Date }) {
-    return this.ventasRepository.findAll(query);
+  findAll(
+    session: UserSession,
+    query?: { skip?: number; take?: number; usuarioId?: string; from?: Date; to?: Date },
+  ) {
+    if (session.user.role !== 'ADMIN') {
+      return this.ventasRepository.findAll(query);
+    } else {
+      return this.ventasRepository.findByUser(session.user.id);
+    }
   }
 
   async findOne(id: string) {

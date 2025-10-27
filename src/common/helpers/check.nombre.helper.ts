@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { Linea, Marca, Product } from 'generated/prisma';
+import { Linea, Marca, Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 export async function checkUniqueName(
