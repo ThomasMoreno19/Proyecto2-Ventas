@@ -19,9 +19,10 @@ export class UsersService {
     private readonly authService: AuthServiceType<typeof auth>,
     @Inject('UsersRepository')
     private readonly usersRepository: UsersRepository,
-  ) {}
+  ) { }
 
   async register(req: ExpressRequest, dto: RegisterDto) {
+    console.log({ dto });
     return this.authService.api.signUpEmail({
       body: {
         email: dto.email,
@@ -33,13 +34,17 @@ export class UsersService {
   }
 
   async login(req: ExpressRequest, dto: LoginDto) {
-    return this.authService.api.signInEmail({
+
+    const response = await this.authService.api.signInEmail({
       body: {
         email: dto.email,
         password: dto.password,
       },
+      returnHeaders: true,
       headers: fromNodeHeaders(req.headers),
     });
+
+    return response;
   }
 
   async emailExists(dto: CheckEmailDto) {
