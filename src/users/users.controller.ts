@@ -35,10 +35,20 @@ export class UsersController {
 
     if (cookie) {
       // Pass the cookie as-is, don't use res.cookie again
-      res.setHeader('Set-Cookie', cookie)
+      res.cookie('better-auth.session_token', cookie, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        domain: 'localhost',
+      })
     }
 
-    return res.json(result.response)
+    const response = res.json(result.response)
+
+
+    return response
   }
 
   @Post('email-exists')
