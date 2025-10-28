@@ -31,7 +31,7 @@ export function manageCookie(response: SignInResponse, res: Response) {
       res.cookie("better-auth.session_token", token, {
         httpOnly: true,
         secure: isProduction,                 // HTTPS required in prod
-        sameSite: isProduction ? "lax" : "none", // cross-site vs local dev
+        sameSite: isProduction ? "none" : "lax", // cross-site vs local dev
         path: "/",
         maxAge: 1000 * 60 * 60 * 24 * 30,
         // ✅ only set domain when both are under same real domain
