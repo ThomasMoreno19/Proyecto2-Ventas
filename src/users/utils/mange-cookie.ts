@@ -1,5 +1,4 @@
 import { Response } from "express";
-import { env } from "src/env/config-keys";
 
 type SignInResponse = {
   headers: Headers;
@@ -29,12 +28,11 @@ export function manageCookie(response: SignInResponse, res: Response) {
 
     if (token) {
       const cookieOptions: any = {
-        httpOnly: true,
+        httpOnly: false,
         secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
         path: "/",
         maxAge: 1000 * 60 * 60 * 24 * 30,
-        // For modern browsers with third-party cookie restrictions (CHIPS)
         partitioned: isProduction,
       };
 
