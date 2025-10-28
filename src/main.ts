@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { env } from './env/config-keys';
+import { manageOrigins } from './utils/manage-origins';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -10,7 +11,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: env.ORIGINS, // or whatever you use locally
+    origin: (origin, callback) => manageOrigins(origin, callback),
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
     allowedHeaders: [
@@ -21,7 +22,7 @@ async function bootstrap() {
       'Origin',
     ],
     exposedHeaders: ['Authorization', 'Set-Cookie'],
-  })
+  });
 
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
