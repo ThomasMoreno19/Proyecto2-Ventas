@@ -28,7 +28,7 @@ export class UsersController {
   async signIn(
     @Request() req: ExpressRequest,
     @Body() dto: SignInDto,
-    @Res() res: ExpressResponse,
+    @Res() res: ExpressResponse
   ) {
     const response = await this.usersService.login(req, dto)
 
