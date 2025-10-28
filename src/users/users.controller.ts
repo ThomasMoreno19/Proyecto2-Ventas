@@ -8,6 +8,7 @@ import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/create-auth.dto';
 import { Session, UserSession } from '@thallesp/nestjs-better-auth';
+import { manageCookie } from './utils/mange-cookie';
 
 @Controller('users')
 export class UsersController {
@@ -30,25 +31,7 @@ export class UsersController {
     @Res() res: ExpressResponse,
   ) {
     const result = await this.usersService.login(req, dto)
-
-    const cookie = result.headers.get('set-cookie')
-
-    if (cookie) {
-      // Pass the cookie as-is, don't use res.cookie again
-      res.cookie('better-auth.session_token', cookie, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-        domain: 'localhost',
-      })
-    }
-
-    const response = res.json(result.response)
-
-
-    return response
+    return manageCookie(result, res)
   }
 
   @Post('email-exists')

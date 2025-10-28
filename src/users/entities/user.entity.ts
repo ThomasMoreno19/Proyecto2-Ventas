@@ -1,6 +1,6 @@
 import { auth } from '../../lib/auth';
 
-type UserBase = typeof auth.$Infer.Session.user;
+export type UserBase = typeof auth.$Infer.Session.user;
 
 export class UserEntity implements UserBase {
   id!: string;
