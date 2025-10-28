@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { env } from './env/config-keys';
-import { manageOrigins } from './utils/manage-origins';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -11,7 +10,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: (origin, callback) => manageOrigins(origin, callback),
+    origin: env.ORIGIN_URL,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT'],
     allowedHeaders: [
