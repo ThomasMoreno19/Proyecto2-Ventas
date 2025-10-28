@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { emailOTP } from 'better-auth/plugins';
+import { bearer } from 'better-auth/plugins';
 import prisma from './db';
 
 export const auth = betterAuth({
@@ -20,6 +21,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    bearer(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
         // For this project we just log the OTP

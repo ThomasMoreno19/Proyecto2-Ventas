@@ -8,7 +8,7 @@ import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/create-auth.dto';
 import { Session, UserSession } from '@thallesp/nestjs-better-auth';
-import { manageCookie } from './utils/mange-cookie';
+import { manageHeader } from './utils/manage-header';
 
 @Controller('users')
 export class UsersController {
@@ -30,8 +30,9 @@ export class UsersController {
     @Body() dto: SignInDto,
     @Res() res: ExpressResponse,
   ) {
-    const result = await this.usersService.login(req, dto)
-    return manageCookie(result, res)
+    const response = await this.usersService.login(req, dto)
+
+    return manageHeader(response, res)
   }
 
   @Post('email-exists')

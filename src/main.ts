@@ -20,7 +20,7 @@ async function bootstrap() {
       'X-Requested-With',
       'Origin',
     ],
-    exposedHeaders: ['Authorization', 'Set-Cookie'],
+    exposedHeaders: ['Authorization', 'Set-Cookie', 'set-auth-token'],
   });
 
   const config = new DocumentBuilder()
