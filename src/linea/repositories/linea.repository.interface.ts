@@ -1,6 +1,6 @@
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
-import { Linea } from '@prisma/client';
+import { Linea, Marca } from '@prisma/client';
 
 export interface ILineaRepository {
   findAll(): Promise<Linea[]>;
@@ -8,4 +8,5 @@ export interface ILineaRepository {
   create(data: CreateLineaDto): Promise<Linea>;
   update(nombre: string, data: UpdateLineaDto): Promise<Linea>;
   softDelete(nombre: string): Promise<void>;
+  findMarcasByLinea(nombre: string): Promise<(Linea & { marcas?: { marca: Marca }[] }) | null>;
 }

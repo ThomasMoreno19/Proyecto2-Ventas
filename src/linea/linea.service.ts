@@ -74,4 +74,14 @@ export class LineaService {
 
     await this.lineaRepository.softDelete(nombre);
   }
+
+  async getMarcasPorLinea(nombre: string) {
+    const linea = await this.lineaRepository.findMarcasByLinea(nombre);
+
+    if (!linea) {
+      throw new NotFoundException(`No existe la línea "${nombre}"`);
+    }
+
+    return linea.marcasLineas.map((ml) => ml.marca);
+  }
 }

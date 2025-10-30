@@ -10,5 +10,5 @@ export class UpdateMarcaDto extends PartialType(CreateMarcaDto) {
   })
   @IsDate()
   @IsNotEmpty({ message: 'es obligatorio.' })
-  updatedAt!: Date;
+  updatedAt?: Date;
 }

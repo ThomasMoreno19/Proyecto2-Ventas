@@ -15,10 +15,9 @@ import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
 import { MarcaDto } from './dto/marca.dto';
-import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
 import { Role } from '@prisma/client';
 
-@UseGuards(AuthGuard)
 @Controller('marca')
 export class MarcaController {
   constructor(private readonly marcaService: MarcaService) {}
@@ -26,7 +25,6 @@ export class MarcaController {
   @ApiOkResponse({ type: MarcaDto })
   @Post()
   @UsePipes(NormalizePipe)
-  @Roles([Role.ADMIN])
   create(@Body() createMarcaDto: CreateMarcaDto) {
     return this.marcaService.create(createMarcaDto);
   }
@@ -40,21 +38,18 @@ export class MarcaController {
   @ApiOkResponse({ type: MarcaDto })
   @Get(':nombre')
   findOne(@Param('nombre') nombre: string) {
-    return this.marcaService.findById(nombre);
+    return this.marcaService.findByName(nombre);
   }
 
   @ApiOkResponse({ type: MarcaDto })
-  @Put(':nombre')
-  @UsePipes(NormalizePipe)
-  @Roles([Role.ADMIN])
-  update(@Param('nombre') nombre: string, @Body() updateMarcaDto: UpdateMarcaDto) {
-    return this.marcaService.update(nombre, updateMarcaDto);
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateMarcaDto: UpdateMarcaDto) {
+    return this.marcaService.update(id, updateMarcaDto);
   }
 
   @ApiNoContentResponse({ description: 'Marca eliminada' })
-  @Delete(':nombre')
-  @Roles([Role.ADMIN])
-  remove(@Param('nombre') nombre: string) {
-    return this.marcaService.softDelete(nombre);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.marcaService.softDelete(id);
   }
 }

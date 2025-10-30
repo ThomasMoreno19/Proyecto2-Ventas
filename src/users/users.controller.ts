@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Request } from '@nestjs/common';
+import { Controller, Post, Body, Request, Req, Res } from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 import { UsersService } from './users.service';
 import { RegisterDto } from './dto/register.dto';
@@ -7,6 +7,7 @@ import { SendEmailOtpDto } from './dto/send-email-otp.dto';
 import { VerifyEmailOtpDto } from './dto/verify-email-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LoginDto } from './dto/login.dto';
+import * as express from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -42,8 +43,22 @@ export class UsersController {
     return this.usersService.confirmPasswordReset(req, dto);
   }
 
-  @Post('login')
-  login(@Request() req: ExpressRequest, @Body() dto: LoginDto) {
-    return this.usersService.login(req, dto);
+  @Post('signin')
+  async login(
+    @Req() req: express.Request,
+    @Res({ passthrough: true }) res: express.Response,
+    @Body() dto: LoginDto,
+  ) {
+    const { token, user } = await this.usersService.login(req, dto);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,       // true si HTTPS
+      sameSite: 'lax',     // 'none' si cross-site y HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return { user };
   }
 }
+

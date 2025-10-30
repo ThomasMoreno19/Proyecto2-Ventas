@@ -25,7 +25,7 @@ export class MarcaService {
     return marcas.map(toMarcaDto);
   }
 
-  async findById(nombre: string): Promise<MarcaDto> {
+  async findByName(nombre: string): Promise<MarcaDto> {
     const marca = await this.marcaRepository.findById(nombre);
     if (!marca) {
       throw new NotFoundException(`Marca con nombre ${nombre} no encontrada`);
@@ -50,15 +50,15 @@ export class MarcaService {
     }
   }
 
-  async update(nombre: string, dto: UpdateMarcaDto): Promise<MarcaDto> {
-    const marca = await this.marcaRepository.update(nombre, dto);
+  async update(id: string, dto: UpdateMarcaDto): Promise<MarcaDto> {
+    const marca = await this.marcaRepository.update(id, dto);
     return toMarcaDto(marca);
   }
 
-  async softDelete(nombre: string): Promise<void> {
-    const marca = await this.marcaRepository.findById(nombre);
+  async softDelete(id: string): Promise<void> {
+    const marca = await this.marcaRepository.findById(id);
     if (!marca) {
-      throw new NotFoundException(`La marca "${nombre}" no existe.`);
+      throw new NotFoundException(`La marca con id ${id} no existe.`);
     }
 
     const canDeleteMarca = await canDelete(this.prisma, marca.id);
@@ -69,6 +69,6 @@ export class MarcaService {
       );
     }
 
-    await this.marcaRepository.softDelete(nombre);
+    await this.marcaRepository.softDelete(id);
   }
 }
