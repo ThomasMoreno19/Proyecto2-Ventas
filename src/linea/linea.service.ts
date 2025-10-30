@@ -7,7 +7,7 @@ import { toLineaDto } from './mappers/linea.mapper';
 import { PrismaService } from '../prisma/prisma.service';
 import { checkUniqueName } from '../common/helpers/check.nombre.helper';
 import { canDelete } from './helpers/check.producto';
-import { asociarMarcas } from './helpers/marcaxlinea.helper';
+import { asociarMarcas } from './helpers/asociar-marcas';
 
 @Injectable()
 export class LineaService {
@@ -27,16 +27,6 @@ export class LineaService {
       throw new NotFoundException(`Línea con nombre ${nombre} no encontrada`);
     }
     return toLineaDto(linea);
-  }
-
-  async getMarcasPorLinea(nombre: string) {
-    const linea = await this.lineaRepository.findMarcasByLinea(nombre);
-
-    if (!linea) {
-      throw new NotFoundException(`No existe la línea ${nombre}`);
-    }
-
-    return linea.marcasLineas.map((ml) => ml.marca);
   }
 
   async create(dto: CreateLineaDto): Promise<LineaDto> {

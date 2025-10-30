@@ -63,9 +63,4 @@ export class LineaController {
   remove(@Param('nombre') nombre: string) {
     return this.lineaService.softDelete(nombre);
   }
-
-  @Get(':nombre/marcas')
-  async getMarcasPorLinea(@Param('nombre') nombre: string) {
-    return this.lineaService.getMarcasPorLinea(nombre);
-  }
 }

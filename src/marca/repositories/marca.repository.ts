@@ -50,6 +50,17 @@ export class MarcaRepository implements IMarcaRepository {
     return marca;
   }
 
+  async findMarcaXLineas(marcaId: string) {
+    
+    return this.prisma.marcaXLinea.findMany({
+      where: { marcaId },
+      include: {
+        marca: { select: { nombre: true } },
+        linea: { select: { nombre: true } },
+      },
+    });
+  }
+
   // Actualizar una marca por nombre
   async update(nombre: string, data: UpdateMarcaDto): Promise<Marca> {
     const marca = await this.prisma.marca.findFirst({

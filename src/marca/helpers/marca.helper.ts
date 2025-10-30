@@ -24,4 +24,13 @@ export class HelperMarca {
     // Si no está eliminada, lanzar un error
     throw new BadRequestException(`Ya existe una marca con el nombre "${existingMarca.nombre}"`);
   }
+
+  async findByMarcaXLineas(nombre: string) {
+    const marca = await this.marcaRepository.findById(nombre);
+    if (!marca) {
+      throw new BadRequestException(`La marca con nombre "${nombre}" no existe.`);
+    }
+    const marcaXLineas = await this.marcaRepository.findMarcaXLineas(marca.id);
+    return marcaXLineas;
+  }
 }

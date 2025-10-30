@@ -43,6 +43,11 @@ export class MarcaController {
     return this.marcaService.findById(nombre);
   }
 
+  @Get(':nombre/marcaxlineas')
+  getLineasPorMarca(@Param('nombre') nombre: string) {
+    return this.marcaService.getMarcaXLineas(nombre);
+  }
+
   @ApiOkResponse({ type: MarcaDto })
   @Put(':nombre')
   @Roles([Role.ADMIN])

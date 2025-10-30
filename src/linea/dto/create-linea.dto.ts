@@ -24,5 +24,5 @@ export class CreateLineaDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  marcaIds?: string[];
+  marcaIds!: string[];
 }

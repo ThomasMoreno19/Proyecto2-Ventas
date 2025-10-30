@@ -39,6 +39,12 @@ export class MarcaService {
     return toMarcaDto(marca);
   }
 
+  async getMarcaXLineas(nombre: string) {
+    const marcaXLineas = await this.helperMarca.findByMarcaXLineas(nombre);
+
+    return marcaXLineas;
+  }
+
   async update(nombre: string, dto: UpdateMarcaDto): Promise<MarcaDto> {
     const marca = await this.marcaRepository.update(nombre, dto);
     return toMarcaDto(marca);

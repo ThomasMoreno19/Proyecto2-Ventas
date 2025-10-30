@@ -3,7 +3,7 @@ import { LineaService } from './linea.service';
 import { LineaRepository } from './repositories/linea.repository';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { asociarMarcas } from './helpers/marcaxlinea.helper';
+import { asociarMarcas } from '../marcaxlinea/helper/marcaXLinea.helper';
 import { checkUniqueName } from '../common/helpers/check.nombre.helper';
 import { canDelete } from './helpers/check.producto';
 import { CreateLineaDto } from './dto/create-linea.dto';
