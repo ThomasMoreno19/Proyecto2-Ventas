@@ -8,13 +8,16 @@ module.exports = {
 
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
+    '^src/(.*)$': '<rootDir>/src/$1',
     '^@common/(.*)$': '<rootDir>/src/common/$1',
   },
+
 
   moduleFileExtensions: ['ts', 'js', 'json'],
 
   // Ajusta testMatch para buscar archivos .spec.ts en subdirectorios de src
   testMatch: ['**/*.spec.ts'],
+
 
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
@@ -28,6 +31,11 @@ module.exports = {
   ],
 
   coverageDirectory: 'coverage',
+
+  // Ignora node_modules y dist tanto en tests como en cobertura
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
+
 
   // Ignora node_modules y dist tanto en tests como en cobertura
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],

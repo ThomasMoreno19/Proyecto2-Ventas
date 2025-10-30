@@ -4,6 +4,10 @@ import { CreateMarcaDto } from '../dto/create-marca.dto';
 export interface IMarcaRepository {
   create(data: CreateMarcaDto): Promise<Marca>;
   findAll(): Promise<Marca[]>;
+  findByName(nombre: string): Promise<Marca | null>;
+  findById(id: string): Promise<Marca | null>;
+  update(id: string, data: Prisma.MarcaUpdateInput): Promise<Marca>;
+  softDelete(id: string): Promise<void>;
   findById(nombre: string): Promise<Marca | null>;
   update(nombre: string, data: Prisma.MarcaUpdateInput): Promise<Marca>;
   softDelete(nombre: string): Promise<void>;

@@ -38,9 +38,22 @@ export class MarcaRepository implements IMarcaRepository {
   }
 
   // Buscar una marca por nombre
-  async findById(nombre: string): Promise<Marca | null> {
+    async findByName(nombre: string): Promise<Marca | null> {
     const marca = await this.prisma.marca.findFirst({
       where: { nombre },
+    });
+
+    if (!marca || marca.deletedAt) {
+      return null;
+    }
+
+    return marca;
+  }
+
+  // Buscar una marca por id
+  async findById(id: string): Promise<Marca | null> {
+    const marca = await this.prisma.marca.findFirst({
+      where: { id },
     });
 
     if (!marca || marca.deletedAt) {
@@ -62,31 +75,33 @@ export class MarcaRepository implements IMarcaRepository {
   }
 
   // Actualizar una marca por nombre
-  async update(nombre: string, data: UpdateMarcaDto): Promise<Marca> {
+  async update(id: string, data: UpdateMarcaDto): Promise<Marca> {
     const marca = await this.prisma.marca.findFirst({
-      where: { nombre },
+      where: { id },
     });
-
+  
     if (!marca || marca.deletedAt) {
-      throw new NotFoundException(`La marca con nombre "${nombre}" no existe`);
+      throw new NotFoundException(`La marca con id "${id}" no existe`);
     }
-
+  
     return this.prisma.marca.update({
       where: { id: marca.id },
       data: {
-        ...data,
+        nombre: data.nombre,        // actualizar nombre si viene
+        descripcion: data.descripcion, // actualizar descripción si viene
+        updatedAt: new Date()       // opcional: registrar fecha de actualización
       },
     });
   }
 
   // Soft-delete por nombre
-  async softDelete(nombre: string): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     const marca = await this.prisma.marca.findFirst({
-      where: { nombre },
+      where: { id },
     });
 
     if (!marca || marca.deletedAt) {
-      throw new NotFoundException(`La marca con nombre "${nombre}" no existe`);
+      throw new NotFoundException(`La marca con nombre "${id}" no existe`);
     }
 
     await this.prisma.marca.update({

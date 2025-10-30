@@ -1,6 +1,6 @@
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
-import { Linea } from '@prisma/client';
+import { Linea, Marca } from '@prisma/client';
 
 export interface ILineaRepository {
   findAll(): Promise<Linea[]>;
