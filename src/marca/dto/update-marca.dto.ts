@@ -1,5 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateMarcaDto } from './create-marca.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDate, IsNotEmpty } from 'class-validator';
 
 export class UpdateMarcaDto extends PartialType(CreateMarcaDto) {
   @ApiPropertyOptional({

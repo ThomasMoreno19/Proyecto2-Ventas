@@ -9,7 +9,7 @@ import { validateUsuario } from './helpers/validate-usuario.helper';
 import {
   validateProductosYStock,
   actualizarStockProductos,
-} from './helpers/validate-productos.helper';
+} from './helpers/validate-producto.helper';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 
 @Injectable()

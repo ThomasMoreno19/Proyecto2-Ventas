@@ -16,33 +16,15 @@ export class LineaRepository implements ILineaRepository {
   }
 
   // Busca una línea por nombre, solo si está activa
-  async findById(nombre: string): Promise<Linea | null> {
+  async findById(id: string): Promise<Linea | null> {
     const linea = await this.prisma.linea.findFirst({
-      where: { nombre },
+      where: { id },
     });
 
     if (!linea || linea.deletedAt) {
       return null;
     }
     return linea;
-  }
-
-  async findMarcasByLinea(nombre: string): Promise<
-    | (Linea & {
-        marcasLineas: { marca: { id: string; nombre: string; descripcion: string | null } }[];
-      })
-    | null
-  > {
-    return this.prisma.linea.findUnique({
-      where: { nombre },
-      include: {
-        marcasLineas: {
-          include: {
-            marca: true, // trae los datos de la marca
-          },
-        },
-      },
-    });
   }
 
   // Crea una nueva línea
@@ -57,13 +39,13 @@ export class LineaRepository implements ILineaRepository {
   }
 
   // Actualiza una línea existente por nombre, solo si está activa
-  async update(nombre: string, data: UpdateLineaDto): Promise<Linea> {
+  async update(id: string, data: UpdateLineaDto): Promise<Linea> {
     const linea = await this.prisma.linea.findFirst({
-      where: { nombre },
+      where: { id },
     });
 
     if (!linea || linea.deletedAt) {
-      throw new NotFoundException(`La línea con nombre "${nombre}" no existe`);
+      throw new NotFoundException(`La línea con nombre "${id}" no existe`);
     }
 
     return this.prisma.linea.update({
@@ -85,19 +67,6 @@ export class LineaRepository implements ILineaRepository {
     await this.prisma.linea.update({
       where: { id },
       data: { deletedAt: new Date() },
-    });
-  }
-
-  async findMarcasByLinea(nombre: string): Promise<(Linea & { marcasLineas: { marca: { id: string; nombre: string; descripcion: string | null } }[] }) | null> {
-    return this.prisma.linea.findUnique({
-      where: { nombre },
-      include: {
-        marcasLineas: {
-          include: {
-            marca: true, // trae los datos de la marca
-          },
-        },
-      },
     });
   }
 }

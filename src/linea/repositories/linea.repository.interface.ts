@@ -8,10 +8,4 @@ export interface ILineaRepository {
   create(data: CreateLineaDto): Promise<Linea>;
   update(nombre: string, data: UpdateLineaDto): Promise<Linea>;
   softDelete(nombre: string): Promise<void>;
-  findMarcasByLinea(nombre: string): Promise<
-    | (Linea & {
-        marcasLineas: { marca: { id: string; nombre: string; descripcion: string | null } }[];
-      })
-    | null
-  >;
 }

@@ -41,11 +41,11 @@ export class LineaService {
     return toLineaDto(linea);
   }
 
-  async update(nombre: string, dto: UpdateLineaDto) {
-    const linea = await this.prisma.linea.findUnique({ where: { nombre } });
-    if (!linea) throw new NotFoundException(`No se encontró la línea '${nombre}'.`);
+  async update(id: string, dto: UpdateLineaDto) {
+    const linea = await this.lineaRepository.findById(id);
+    if (!linea) throw new NotFoundException(`No se encontró la línea '${id}'.`);
 
-    const updatedLinea = await this.lineaRepository.update(nombre, dto);
+    const updatedLinea = await this.lineaRepository.update(id, dto);
 
     if (dto.marcaIds?.length) {
       await asociarMarcas({
@@ -58,10 +58,10 @@ export class LineaService {
     return toLineaDto(updatedLinea);
   }
 
-  async softDelete(nombre: string): Promise<void> {
-    const linea = await this.lineaRepository.findById(nombre);
+  async softDelete(id: string): Promise<void> {
+    const linea = await this.lineaRepository.findById(id);
     if (!linea) {
-      throw new NotFoundException(`La línea "${nombre}" no existe.`);
+      throw new NotFoundException(`La línea "${id}" no existe.`);
     }
 
     const canDeleteLinea = await canDelete(this.prisma, linea.id);
@@ -72,16 +72,6 @@ export class LineaService {
       );
     }
 
-    await this.lineaRepository.softDelete(nombre);
-  }
-
-  async getMarcasPorLinea(nombre: string) {
-    const linea = await this.lineaRepository.findMarcasByLinea(nombre);
-
-    if (!linea) {
-      throw new NotFoundException(`No existe la línea "${nombre}"`);
-    }
-
-    return linea.marcasLineas.map((ml) => ml.marca);
+    await this.lineaRepository.softDelete(id);
   }
 }

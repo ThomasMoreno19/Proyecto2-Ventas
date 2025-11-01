@@ -19,12 +19,12 @@ import {
 } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { LineaDto } from './dto/linea.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@thallesp/nestjs-better-auth';
+import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
 import { Role } from '@prisma/client';
 
 @ApiTags('lineas')
 @Controller('linea')
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class LineaController {
   constructor(private readonly lineaService: LineaService) {}
 
@@ -32,7 +32,7 @@ export class LineaController {
   @ApiBody({ type: CreateLineaDto })
   @Post()
   @UsePipes(NormalizePipe)
-  //@Roles([Role.ADMIN])
+  @Roles([Role.ADMIN])
   create(@Body() createLineaDto: CreateLineaDto) {
     return this.lineaService.create(createLineaDto);
   }
@@ -50,22 +50,16 @@ export class LineaController {
   }
 
   @ApiOkResponse({ type: LineaDto })
-  @Put(':nombre')
-  @UsePipes(NormalizePipe)
-  //@Roles([Role.ADMIN])
-  update(@Param('nombre') nombre: string, @Body() updateLineaDto: UpdateLineaDto) {
-    return this.lineaService.update(nombre, updateLineaDto);
+  @Put(':id')
+  @Roles([Role.ADMIN])
+  update(@Param('id') id: string, @Body() updateLineaDto: UpdateLineaDto) {
+    return this.lineaService.update(id, updateLineaDto);
   }
 
   @ApiNoContentResponse({ description: 'Linea eliminada' })
-  @Delete(':nombre')
-  //@Roles([Role.ADMIN])
-  remove(@Param('nombre') nombre: string) {
-    return this.lineaService.softDelete(nombre);
-  }
-
-  @Get(':nombre/marcas')
-  async getMarcasPorLinea(@Param('nombre') nombre: string) {
-    return this.lineaService.getMarcasPorLinea(nombre);
+  @Delete(':id')
+  @Roles([Role.ADMIN])
+  remove(@Param('id') id: string) {
+    return this.lineaService.softDelete(id);
   }
 }

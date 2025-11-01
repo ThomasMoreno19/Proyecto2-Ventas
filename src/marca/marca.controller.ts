@@ -15,9 +15,10 @@ import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { NormalizePipe } from '../common/pipes/normalize.nombre.pipe';
 import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
 import { MarcaDto } from './dto/marca.dto';
-import { AuthGuard } from '@thallesp/nestjs-better-auth';
+import { AuthGuard, Roles } from '@thallesp/nestjs-better-auth';
 import { Role } from '@prisma/client';
 
+UseGuards(AuthGuard)
 @Controller('marca')
 export class MarcaController {
   constructor(private readonly marcaService: MarcaService) {}
@@ -49,10 +50,14 @@ export class MarcaController {
   @ApiOkResponse({ type: MarcaDto })
   @Put(':nombre')
   @Roles([Role.ADMIN])
-  update(@Param('nombre') nombre: string, @Body(NormalizePipe) updateMarcaDto: UpdateMarcaDto) {
+  updateByNombre(@Param('nombre') nombre: string, @Body(NormalizePipe) updateMarcaDto: UpdateMarcaDto) {
     return this.marcaService.update(nombre, updateMarcaDto);
+  }
+
+
+  @ApiOkResponse({ description: 'Marca actualizada', type: MarcaDto })
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateMarcaDto: UpdateMarcaDto) {
+  updateById(@Param('id') id: string, @Body() updateMarcaDto: UpdateMarcaDto) {
     return this.marcaService.update(id, updateMarcaDto);
   }
 

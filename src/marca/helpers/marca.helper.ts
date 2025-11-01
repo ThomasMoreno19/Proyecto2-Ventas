@@ -26,7 +26,7 @@ export class HelperMarca {
   }
 
   async findByMarcaXLineas(nombre: string) {
-    const marca = await this.marcaRepository.findById(nombre);
+    const marca = await this.marcaRepository.findByName(nombre);
     if (!marca) {
       throw new BadRequestException(`La marca con nombre "${nombre}" no existe.`);
     }
