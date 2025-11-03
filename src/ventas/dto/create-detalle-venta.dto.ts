@@ -23,13 +23,4 @@ export class CreateDetalleVentaDto {
     description: 'Cantidad de unidades del producto en la venta',
   })
   cantidad!: number;
-
-  @IsNumber()
-  @IsPositive()
-  @Type(() => Number)
-  @ApiProperty({
-    example: 100.5,
-    description: 'Precio unitario del producto en la venta',
-  })
-  precioUnitario!: number;
 }

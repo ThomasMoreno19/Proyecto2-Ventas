@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { LineaModule } from './linea/linea.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { ProductModule } from './product/product.module';
+import { VentaModule } from './ventas/venta.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ProductModule } from './product/product.module';
     LineaModule,
     ProductModule,
     AuthModule,
+    VentaModule,  
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

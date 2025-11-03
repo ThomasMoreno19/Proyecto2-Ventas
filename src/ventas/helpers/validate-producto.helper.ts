@@ -20,21 +20,3 @@ export async function validateProductosYStock(
     }
   }
 }
-
-// Helper: Update product stock
-export async function actualizarStockProductos(
-  prisma: PrismaService,
-  detalles: { productoId: string; cantidad: number }[],
-) {
-  for (const detalle of detalles) {
-    await prisma.product.update({
-      where: { id: detalle.productoId },
-      data: {
-        stock: {
-          decrement: detalle.cantidad,
-        },
-        updatedAt: new Date(),
-      },
-    });
-  }
-}

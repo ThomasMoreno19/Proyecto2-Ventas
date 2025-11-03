@@ -17,7 +17,6 @@ export class ProductRepository implements IProductRepository {
         precio: data.precio,
         stock: data.stock,
         marcaXLineaId: data.marcaXLineaId,
-        deletedAt: null, // explícito
       },
     });
   }
@@ -56,7 +55,7 @@ export class ProductRepository implements IProductRepository {
     });
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<boolean> {
     const producto = await this.prisma.product.findFirst({
       where: { id },
     });
@@ -71,5 +70,6 @@ export class ProductRepository implements IProductRepository {
         deletedAt: new Date(),
       },
     });
+    return true;
   }
 }

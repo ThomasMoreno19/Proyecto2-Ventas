@@ -24,12 +24,5 @@ export function toCreateCDetalleVentaDto(
   return {
     productoId: detalleVenta.productoId,
     cantidad: detalleVenta.cantidad,
-    precioUnitario: detalleVenta.precioUnitario,
   };
 }
-
-/*function calcularTotal(detalleVenta: (DetalleVenta & { producto: Product })[]): number {
-  return detalleVenta.reduce((total, detalle) => {
-    return total + detalle.cantidad * detalle.precioUnitario;
-  }, 0);
-}*/

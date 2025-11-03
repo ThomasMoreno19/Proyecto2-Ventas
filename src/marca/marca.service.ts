@@ -1,16 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MarcaRepository } from './repositories/marca.repository';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { MarcaDto } from './dto/marca.dto';
 import { toMarcaDto } from './mappers/marca.mapper';
 import { PrismaService } from '../prisma/prisma.service';
 import { HelperMarca } from './helpers/marca.helper';
+import { IMarcaRepository } from './repositories/marca.repository.interface';
 
 @Injectable()
 export class MarcaService {
   constructor(
-    private readonly marcaRepository: MarcaRepository,
+    @Inject('IMarcaRepository') private readonly marcaRepository: IMarcaRepository,
     private readonly prisma: PrismaService,
     private readonly helperMarca: HelperMarca,
   ) {}
@@ -50,7 +50,7 @@ export class MarcaService {
     return toMarcaDto(marca);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<boolean> {
     const marca = await this.marcaRepository.findById(id);
     if (!marca) {
       throw new NotFoundException(`La marca con id ${id} no existe.`);
@@ -64,6 +64,6 @@ export class MarcaService {
       );
     }
 
-    await this.marcaRepository.softDelete(id);
+    return await this.marcaRepository.softDelete(id);
   }
 }

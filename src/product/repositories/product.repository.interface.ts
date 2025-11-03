@@ -7,5 +7,5 @@ export interface IProductRepository {
   findAll(): Promise<Product[]>;
   findOne(id: string): Promise<Product | null>;
   update(id: string, data: UpdateProductDto): Promise<Product>;
-  softDelete(id: string): Promise<void>;
+  softDelete(id: string): Promise<boolean>;
 }

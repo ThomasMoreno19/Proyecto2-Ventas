@@ -32,8 +32,8 @@ export class VentasController {
   }
 
   @Get()
-  findAll(@Query() q: FindAllQuery, @Session() session: UserSession, to?: Date, from?: Date) {
-    return this.ventasService.findAll(session, to, from, q);
+  findAll(@Query() q: FindAllQuery, @Session() session: UserSession) {
+    return this.ventasService.findAll(session, q);
   }
 
   @Get(':id')
@@ -47,7 +47,7 @@ export class VentasController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ventasService.remove(id);
+  softDelete(@Param('id') id: string): Promise<boolean> {
+    return this.ventasService.softDelete(id);
   }
 }

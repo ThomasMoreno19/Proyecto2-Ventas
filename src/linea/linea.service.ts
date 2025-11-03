@@ -1,5 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { LineaRepository } from './repositories/linea.repository';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLineaDto } from './dto/create-linea.dto';
 import { UpdateLineaDto } from './dto/update-linea.dto';
 import { LineaDto } from './dto/linea.dto';
@@ -8,11 +7,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { checkUniqueName } from '../common/helpers/check.nombre.helper';
 import { canDelete } from './helpers/check.producto';
 import { asociarMarcas } from './helpers/asociar-marcas';
+import { ILineaRepository } from './repositories/linea.repository.interface';
 
 @Injectable()
 export class LineaService {
   constructor(
-    private readonly lineaRepository: LineaRepository,
+    @Inject('ILineaRepository') private readonly lineaRepository: ILineaRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -58,7 +58,7 @@ export class LineaService {
     return toLineaDto(updatedLinea);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<boolean> {
     const linea = await this.lineaRepository.findById(id);
     if (!linea) {
       throw new NotFoundException(`La línea "${id}" no existe.`);
@@ -72,6 +72,6 @@ export class LineaService {
       );
     }
 
-    await this.lineaRepository.softDelete(id);
+    return await this.lineaRepository.softDelete(id);
   }
 }

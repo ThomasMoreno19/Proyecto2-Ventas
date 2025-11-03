@@ -57,7 +57,7 @@ export class LineaRepository implements ILineaRepository {
   }
 
   // Soft-delete: marca deletedAt con la fecha actual
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<boolean> {
     const linea = await this.prisma.linea.findUnique({ where: { id } });
 
     if (!linea || linea.deletedAt) {
@@ -68,5 +68,6 @@ export class LineaRepository implements ILineaRepository {
       where: { id },
       data: { deletedAt: new Date() },
     });
+    return true;
   }
 }

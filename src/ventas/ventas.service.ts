@@ -1,35 +1,30 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateVentaDto } from './dto/update-venta.dto';
-import type { VentaRepository } from './repository/venta.interface.repository';
+import type { IVentaRepository } from './repository/venta.interface.repository';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { toVentaDto } from './mappers/venta.mapper';
 import { validateCliente } from './helpers/validate-cliente.helper';
 import { validateUsuario } from './helpers/validate-usuario.helper';
 import {
   validateProductosYStock,
-  actualizarStockProductos,
 } from './helpers/validate-producto.helper';
+import { disminuirStock, aumentarStock } from './helpers/actualizar-stock.helper';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 
 @Injectable()
 export class VentasService {
   constructor(
-    @Inject('VentaRepository') private readonly ventasRepository: VentaRepository,
+    @Inject('IVentaRepository') private readonly ventasRepository: IVentaRepository,
     private readonly prisma: PrismaService,
   ) {}
 
   async create(dto: CreateVentaDto, session: UserSession) {
-    console.log('Creating venta with DTO:', dto);
     // Validaciones
     await validateCliente(this.prisma, dto.cuil);
-    console.log('Cliente validado');
     await validateUsuario(this.prisma, session.user.id);
-    console.log('Usuario validado');
     await validateProductosYStock(this.prisma, dto.detalleVenta);
-    console.log('Productos y stock validados');
-    await actualizarStockProductos(this.prisma, dto.detalleVenta);
-    console.log('Stock de productos actualizado');
+    await disminuirStock(this.prisma, dto.detalleVenta);
 
     // Llama al repositorio con solo el DTO
     const venta = await this.ventasRepository.create(dto, session);
@@ -39,14 +34,12 @@ export class VentasService {
 
   findAll(
     session: UserSession,
-    to?: Date,
-    from?: Date,
     query?: { skip?: number; take?: number; usuarioId?: string; from?: Date; to?: Date },
   ) {
     if (session.user.role !== 'ADMIN') {
-      return this.ventasRepository.findAll(query, to, from);
+      return this.ventasRepository.findAll(query);
     } else {
-      return this.ventasRepository.findByUser(session.user.id, to, from);
+      return this.ventasRepository.findByUser(session.user.id);
     }
   }
 
@@ -69,7 +62,9 @@ export class VentasService {
     return this.ventasRepository.update(id, dto, session);
   }
 
-  remove(id: string) {
-    return this.ventasRepository.remove(id);
+  softDelete(id: string) {
+    // TODO: Validaciones
+    aumentarStock(this.prisma, id);
+    return this.ventasRepository.softDelete(id);
   }
 }

@@ -1,6 +1,5 @@
 // src/cliente/cliente.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ClienteRepository } from './repository/cliente.repository';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { toClienteDto } from './mapper/cliente.mapper';
@@ -10,12 +9,12 @@ import {
   ensureUniqueForUpdate,
   ensureExistsAndActive,
 } from './helper/cliente.helper';
-import { DeleteClienteDto } from './dto/delete-cliente.dto';
+import { IClienteRepository } from './repository/cliente.repository.interface';
 
 @Injectable()
 export class ClienteService {
   constructor(
-    private readonly clienteRepository: ClienteRepository,
+    @Inject('IVentaRepository') private readonly clienteRepository: IClienteRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -46,7 +45,7 @@ export class ClienteService {
     return toClienteDto(cliente);
   }
 
-  async softDelete(cuil: string): Promise<DeleteClienteDto> {
+  async softDelete(cuil: string): Promise<boolean> {
     await ensureExistsAndActive(this.prisma, cuil);
     return await this.clienteRepository.softDelete(cuil);
   }

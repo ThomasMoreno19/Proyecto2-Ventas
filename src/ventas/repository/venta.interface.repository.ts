@@ -4,7 +4,7 @@ import { Venta } from '@prisma/client';
 import { VentaWithAllRelations } from './venta.repository';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 
-export interface VentaRepository {
+export interface IVentaRepository {
   create(data: CreateVentaDto, session: UserSession): Promise<VentaWithAllRelations>;
   findAll(
     params?: {
@@ -13,12 +13,9 @@ export interface VentaRepository {
       usuarioId?: string;
       from?: Date;
       to?: Date;
-    },
-    to?: Date,
-    from?: Date,
-  ): Promise<{ items: Venta[]; total: number }>;
+    }): Promise<{ items: Venta[]; total: number }>;
   findOne(id: string): Promise<VentaWithAllRelations | null>;
   update(id: string, data: UpdateVentaDto, session: UserSession): Promise<VentaWithAllRelations>;
-  remove(id: string): Promise<{ ok: true }>;
+  softDelete(id: string): Promise<boolean>;
   findByUser(usuarioId: string, to?: Date, from?: Date): Promise<VentaWithAllRelations[]>;
 }

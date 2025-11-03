@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import type { Prisma } from '@prisma/client';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
-import type { VentaRepository } from './venta.interface.repository';
+import type { IVentaRepository } from './venta.interface.repository';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 
 export type VentaWithAllRelations = Prisma.VentaGetPayload<{
@@ -19,11 +19,10 @@ export type VentaWithAllRelations = Prisma.VentaGetPayload<{
 }>;
 
 @Injectable()
-export class PrismaVentaRepository implements VentaRepository {
+export class VentaRepository implements IVentaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateVentaDto, session: UserSession): Promise<VentaWithAllRelations> {
-    console.log('Creating venta in repository with data:', data);
     const detalleCreateInput: Prisma.DetalleVentaCreateWithoutVentaInput[] = data.detalleVenta.map(
       (d) => ({
         cantidad: d.cantidad,
@@ -190,7 +189,7 @@ export class PrismaVentaRepository implements VentaRepository {
     return updated as VentaWithAllRelations;
   }
 
-  async remove(id: string): Promise<{ ok: true }> {
+  async softDelete(id: string): Promise<boolean> {
     const exists = await this.prisma.venta.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Venta no encontrada');
 
@@ -207,6 +206,6 @@ export class PrismaVentaRepository implements VentaRepository {
       }),
     ]);
 
-    return { ok: true };
+    return true;
   }
 }

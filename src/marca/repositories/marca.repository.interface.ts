@@ -6,10 +6,8 @@ export interface IMarcaRepository {
   findAll(): Promise<Marca[]>;
   findByName(nombre: string): Promise<Marca | null>;
   findById(id: string): Promise<Marca | null>;
+  findMarca(nombre: string): Promise<Marca | null>;
   update(id: string, data: Prisma.MarcaUpdateInput): Promise<Marca>;
-  softDelete(id: string): Promise<void>;
-  findById(nombre: string): Promise<Marca | null>;
-  update(nombre: string, data: Prisma.MarcaUpdateInput): Promise<Marca>;
-  softDelete(nombre: string): Promise<void>;
+  softDelete(id: string): Promise<boolean>;
   findMarcaXLineas(marcaId: string): Promise<any[]>;
 }

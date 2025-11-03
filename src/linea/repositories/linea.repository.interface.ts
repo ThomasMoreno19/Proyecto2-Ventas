@@ -6,6 +6,6 @@ export interface ILineaRepository {
   findAll(): Promise<Linea[]>;
   findById(nombre: string): Promise<Linea | null>;
   create(data: CreateLineaDto): Promise<Linea>;
-  update(nombre: string, data: UpdateLineaDto): Promise<Linea>;
-  softDelete(nombre: string): Promise<void>;
+  update(id: string, data: UpdateLineaDto): Promise<Linea>;
+  softDelete(id: string): Promise<boolean>;
 }

@@ -95,7 +95,7 @@ export class MarcaRepository implements IMarcaRepository {
   }
 
   // Soft-delete por nombre
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string): Promise<boolean> {
     const marca = await this.prisma.marca.findFirst({
       where: { id },
     });
@@ -108,6 +108,8 @@ export class MarcaRepository implements IMarcaRepository {
       where: { id: marca.id },
       data: { deletedAt: new Date() },
     });
+    
+    return true;
   }
 
   // Buscar una marca por nombre, sin importar si está eliminada o no

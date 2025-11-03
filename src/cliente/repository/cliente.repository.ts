@@ -4,7 +4,6 @@ import { Cliente } from '@prisma/client';
 import { IClienteRepository } from './cliente.repository.interface';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import { UpdateClienteDto } from '../dto/update-cliente.dto';
-import { DeleteClienteDto } from '../dto/delete-cliente.dto';
 
 @Injectable()
 export class ClienteRepository implements IClienteRepository {
@@ -68,7 +67,7 @@ export class ClienteRepository implements IClienteRepository {
   }
 
   // Soft-delete por cuil
-  async softDelete(cuil: string): Promise<DeleteClienteDto> {
+  async softDelete(cuil: string): Promise<boolean> {
     const cliente = await this.prisma.cliente.findFirst({
       where: { cuil: cuil },
     });
@@ -81,6 +80,6 @@ export class ClienteRepository implements IClienteRepository {
       where: { cuil: cliente.cuil },
       data: { deletedAt: new Date() },
     });
-    return { cuil, deleteAt: new Date() };
+    return true;
   }
 }
